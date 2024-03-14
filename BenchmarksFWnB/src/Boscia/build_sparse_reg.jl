@@ -1,13 +1,3 @@
-using Boscia
-using FrankWolfe
-using LinearAlgebra
-using SCIP
-import Bonobo
-import MathOptInterface
-const MOI = MathOptInterface
-using Random
-using Statistics
-
 """
 Example function building data (f, grad! and lmo) for sparse regression Boscia
 """

@@ -1,7 +1,3 @@
-using FrankWolfe
-using Match
-using Random
-
 function create_data(fw_alg, lmo, obj, dim, seed=1234)
     rng = MersenneTwister(seed)
 

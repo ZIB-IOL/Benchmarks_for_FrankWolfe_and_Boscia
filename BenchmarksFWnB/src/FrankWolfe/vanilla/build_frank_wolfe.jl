@@ -1,5 +1,3 @@
-using FrankWolfe
-
 function abs_sum() 
     f(x) = sum(abs2, x)
     grad!(storage, x) = storage .= 2x

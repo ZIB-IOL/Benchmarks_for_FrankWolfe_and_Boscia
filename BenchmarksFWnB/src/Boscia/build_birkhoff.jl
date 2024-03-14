@@ -1,14 +1,3 @@
-using Boscia
-using FrankWolfe
-using Test
-using Random
-using SCIP
-using LinearAlgebra
-import MathOptInterface
-const MOI = MathOptInterface
-import HiGHS
-
-
 function build_data_birkhoff(n, k, seed=1234)
     rng = MersenneTwister(1234)
     
