@@ -1,19 +1,17 @@
 module SetupFrankWolfe
 
-using Random 
-using LinearAlgebra
+using Random
 using FrankWolfe
-
-const algs = ["vanilla", "away", "blended", "blended_pairwise"]
-const lmos = ["ProbSimplex", "LpNorm", "Birkhoff"]
+using BenchmarkTools
 
 working_dir = @__DIR__
 
 for dir in readdir(working_dir)
     if !endswith(dir, ".jl")
-        file = readdir(joinpath(working_dir, dir))[1]
-        include(joinpath(working_dir, dir, file))
+        for file in readdir(joinpath(working_dir, dir))
+            include(joinpath(working_dir, dir, file))
+        end
     end
 end
 
-end  # module
+end;  # module

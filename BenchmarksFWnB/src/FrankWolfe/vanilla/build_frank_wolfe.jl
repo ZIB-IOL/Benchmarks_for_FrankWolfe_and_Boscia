@@ -1,15 +1,14 @@
-using FrankWolfe
-
-function abs_sum() 
+function build_abs_sum() 
     f(x) = sum(abs2, x)
     grad!(storage, x) = storage .= 2x
     return f, grad!
-end
+end;
 
-function build_random(dim, seed)
+function build_random(; dim=10, seed=1234)
     rng = MersenneTwister(seed)
-    A = rand(rng, 5*dim, dim)
-    b = rand(rng, 5*dim)
+    
+    A = Random.randn(rng, 5*dim, dim)
+    b = Random.randn(rng, 5*dim)
     
     m = 5*dim
 
@@ -21,4 +20,4 @@ function build_random(dim, seed)
     grad!(storage, x) = storage .= A_sq * x + A_b
 
     return f, grad!
-end
+end;
