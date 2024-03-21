@@ -117,12 +117,12 @@ function benchmark_FW(  ;
         f, grad!, lmo, x0 = build_nuclear(n=n, k=k, seed=seed)
     else
         lmo, x0 = @match lmo begin
-            "simplex" => build_simplex(dim=dim, seed=seed)
+            "simplex" => build_simplex(n=n, seed=seed)
             "Birkhoff" => build_birkhoff_FW
-            _ => build_simplex(dim=dim, seed=seed)
+            _ => build_simplex(n=n, seed=seed)
         end
         f, grad! = @match obj begin 
-            "random MSE" => build_random(dim=dim, seed=seed)
+            "random MSE" => build_random(n=n, k=k, seed=seed)
             "abs sum" => build_abs_sum()
             _ => build_random(dim=dim, seed=seed)
         end
