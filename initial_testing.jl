@@ -25,8 +25,8 @@ compare_benchmarks(bm2, bm1)
 
 println()
 
-bm1 = benchmark_Boscia(n=100, seconds=60)
-bm2 = benchmark_Boscia(fw="BCG", n=100, seconds=60)
+bm1 = benchmark_Boscia(n=10, seconds=60)
+bm2 = benchmark_Boscia(fw="BCG", n=10, seconds=60)
 
 println("Boscia \nBCG vs. BPCG \n")
 compare_benchmarks(bm2, bm1)
