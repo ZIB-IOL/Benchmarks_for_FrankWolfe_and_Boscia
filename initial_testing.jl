@@ -1,19 +1,32 @@
 """ 
-Dummy example for showing how to compare FW benchmarks.
+Dummy example for showing how to compare benchmarks.
 
-    - 'bm1' contains the evaluated benchmark run for default options (vanilla FW, simplex, random MSE)
-    - 'bm2' contains the evaluated benchmark run for BPCG on simplex and random MSE objective
+    # FrankWolfe
+    - 'bm1' is default options (vanilla, simplex, random MSE), bm2 uses BPCG instead.
+    - Should show big improvement
 
-    Note that due to creating a new instance of MersenneTwister(seed) in each call the generated random data is indeed the same.
+    # Boscia
+    - 'bm1' is default options (BPCG, cube simple int), bm2 uses BCG instead.
+    - should show regression
 """
+
 include("BenchmarksFWnB/src/BenchmarksFWnB.jl")
 using .BenchmarksFWnB
 
 # vanilla fw
-_, bm1 = benchmark_FW()
+bm1 = benchmark_FW(n=100, k=20, seconds=60)
 
 # blended pairwise 
-_, bm2 = benchmark_FW(fw="BPCG")
+bm2 = benchmark_FW(fw="BPCG", n=100, k=20, seconds=60)
 
 # decides whether bm2 is an improvement over bm1 (or in general, if the benchmark in the first argument is better than the benchmark in the second argument)
+println("Frank-Wolfe \nBPCG vs. Vanilla \n")
+compare_benchmarks(bm2, bm1)
+
+println()
+
+bm1 = benchmark_Boscia(n=100, seconds=60)
+bm2 = benchmark_Boscia(fw="BCG", n=100, seconds=60)
+
+println("Boscia \nBCG vs. BPCG \n")
 compare_benchmarks(bm2, bm1)

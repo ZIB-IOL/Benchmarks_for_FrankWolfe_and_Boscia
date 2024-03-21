@@ -1,11 +1,12 @@
-function build_nuclear_obj(; dim=10, seed=1234)
+function build_nuclear_obj(; n=500, k=30, seed=1234)
     rng = MersenneTwister(seed)
 
-    nfeat = 5 * dim
-    nobs = 5 * dim
+    # dimension
+    nfeat = n
+    nobs = n
 
     # rank
-    r = Integer(floor(0.3 * dim))
+    r = Integer(k)
 
     Xreal = Matrix{Float64}(undef, nobs, nfeat)
 
@@ -21,9 +22,7 @@ function build_nuclear_obj(; dim=10, seed=1234)
 
     # def nuc-norm 
     nucnorm(Xmat) = sum(abs(σi) for σi in svdvals(Xmat))
-
-    @assert rank(Xreal) == r
-
+    
     missing_entries = unique!([(rand(1:nobs), rand(1:nfeat)) for _ in 1:10000])
     present_entries = [(i, j) for i in 1:nobs, j in 1:nfeat if (i, j) ∉ missing_entries]
 
@@ -38,4 +37,16 @@ function build_nuclear_obj(; dim=10, seed=1234)
         return nothing
     end
     return f, grad!
+end;
+
+function build_nuclear_lmo(; n=500)
+    lmo = FrankWolfe.NuclearNormLMO(275_000.0)
+    x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
+    return lmo, x0
+end;
+
+function build_nuclear(; n=500, k=30, seed=1234)
+    f, grad! = build_nuclear_obj(n=n, k=k, seed=seed)
+    lmo, x0 = build_nuclear_lmo(n=n)
+    return f, grad!, lmo, x0
 end;

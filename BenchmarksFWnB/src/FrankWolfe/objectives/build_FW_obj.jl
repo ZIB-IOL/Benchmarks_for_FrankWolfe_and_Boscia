@@ -1,14 +1,20 @@
+"""
+Objective in FrankWolfe.jl homepage example.
+"""
 function build_abs_sum() 
     f(x) = sum(abs2, x)
     grad!(storage, x) = storage .= 2x
     return f, grad!
 end;
 
-function build_random(; dim=10, seed=1234)
+"""
+Builds ||Ax + b||^2 objective with random normally distributed A and b.
+"""
+function build_random(; n=100, k=30, seed=1234)
     rng = MersenneTwister(seed)
     
-    A = Random.randn(rng, 5*dim, dim)
-    b = Random.randn(rng, 5*dim)
+    A = Random.randn(rng, n, k)
+    b = Random.randn(rng, n)
     
     m = 5*dim
 

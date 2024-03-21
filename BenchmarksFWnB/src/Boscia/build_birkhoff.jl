@@ -1,7 +1,7 @@
 """
 Builds data according to 'Birkhoff' example in Boscia.jl
 """
-function build_data_birkhoff(n, k; seed=1234)
+function build_birkhoff_boscia(; n=10, k=5, seed=1234)
     rng = MersenneTwister(seed)
     
     Xstar = rand(rng, n, n)
