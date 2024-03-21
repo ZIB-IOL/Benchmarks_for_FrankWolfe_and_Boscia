@@ -6,8 +6,7 @@ Dummy example for showing how to compare benchmarks.
     - Should show big improvement
 
     # Boscia
-    - 'bm1' is default options (BPCG, cube simple int), bm2 uses BCG instead.
-    - should show regression
+    - 'bm1' is default options (BPCG, cube simple int), bm2 uses vanilla instead.
 """
 
 include("BenchmarksFWnB/src/BenchmarksFWnB.jl")
@@ -26,7 +25,7 @@ compare_benchmarks(bm2, bm1)
 println()
 
 bm1 = benchmark_Boscia(n=10, seconds=60)
-bm2 = benchmark_Boscia(fw="BCG", n=10, seconds=60)
+bm2 = benchmark_Boscia(fw="vanilla", n=10, seconds=60)
 
-println("Boscia \nBCG vs. BPCG \n")
+println("Boscia \nVanilla vs. BPCG \n")
 compare_benchmarks(bm2, bm1)
