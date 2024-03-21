@@ -24,7 +24,7 @@ function build_cube_simple_integer(
 
     lmo = Boscia.CubeSimpleBLMO(lbs, ubs, int_vars)
 
-    return f, grad!, lmo
+    return f, grad!, lmo, lbs[int_vars], ubs[int_vars], int_vars, n
 end;
 
 """
@@ -54,5 +54,5 @@ function build_cube_simple_mixed(
 
     lmo = Boscia.CubeSimpleBLMO(lbs, ubs, int_vars)
 
-    return f, grad!, lmo
+    return f, grad!, lmo, lbs[int_vars], ubs[int_vars], int_vars, n
 end;
