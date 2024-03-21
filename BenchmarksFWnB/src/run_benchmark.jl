@@ -79,8 +79,10 @@ If any one of 'lmo' or 'obj' is "nuclear", then both LMO and objective function 
                                                             "abs_sum"
                                                             "nuclear"
                                                             "TBD"
-    - 'n': value of 'n', where applicable
-    - 'k': value of 'k', where applicable
+    - 'lmo_n': value of 'n' for LMOs, where applicable
+    - 'lmo_k': value of 'k' for LMOs, where applicable
+    - 'obj_n': value of 'n' for objectives, where applicable
+    - 'obj_k': value of 'k' for objectives, where applicable
     - 'seed': random seed 
     - 'fw_kwargs': keyword arguments for FrankWolfe algorithm, e.g. [(:epsilon, 1e-7), (:max_iteration, 5000)]
     - 'seconds': time limit for benchmark run
@@ -96,8 +98,10 @@ function benchmark_FW(  ;
                         fw="vanilla", 
                         lmo="simplex", 
                         obj="random MSE", 
-                        n=10,
-                        k=5, 
+                        lmo_n=5,
+                        lmo_k=10, 
+                        obj_n=10,
+                        obj_k=5,
                         seed=1234, 
                         fw_kwargs=[],
                         seconds=3600,
@@ -113,18 +117,24 @@ function benchmark_FW(  ;
         "away" => away_frank_wolfe
         _ => frank_wolfe
     end
+
+    # nuclear
     if lmo == "nuclear" || obj == "nuclear"
         f, grad!, lmo, x0 = build_nuclear(n=n, k=k, seed=seed)
+    
+    # Birkhoff
+    elseif lmo == "Birkhoff" || obj == "Birkhoff"
+        f, grad!, lmo, x0 = build_birkhoff_fw(n=n, k=k, seed=seed)
+
     else
         lmo, x0 = @match lmo begin
-            "simplex" => build_simplex(n=n, seed=seed)
-            "Birkhoff" => build_birkhoff_FW
-            _ => build_simplex(n=n, seed=seed)
+            "simplex" => build_simplex(n=lmo_n, seed=seed)
+            _ => build_simplex(n=lmo_n, seed=seed)
         end
         f, grad! = @match obj begin 
-            "random MSE" => build_random(n=n, k=k, seed=seed)
-            "abs sum" => build_abs_sum()
-            _ => build_random(dim=dim, seed=seed)
+            "random MSE" => build_random(n=obj_n, k=obj_k, seed=seed)
+            "abs_sum" => build_abs_sum()
+            _ => build_random(n=obj_n, k=obj_k, seed=seed)
         end
     end
 

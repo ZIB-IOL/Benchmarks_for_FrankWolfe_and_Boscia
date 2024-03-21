@@ -38,6 +38,8 @@ const SetupBoscia = BenchmarksFWnB.SetupBoscia
 
 const build_birkhoff_boscia = SetupBoscia.build_birkhoff_boscia
 const build_sparse_reg = SetupBoscia.build_sparse_reg
+const build_cube_simple_integer = SetupBoscia.build_cube_simple_integer
+const build_cube_simple_mixed = SetupBoscia.build_cube_simple_mixed
 
 export build_birkhoff_boscia, build_sparse_reg
 
