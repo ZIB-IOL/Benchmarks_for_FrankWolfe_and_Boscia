@@ -23,7 +23,7 @@ function run_benchmark(func,
                        time_tolerance=0.05, 
                        memory_tolerance=0.01,
                        )
-    benchmarkable = @benchmarkable $func($args..., $kwargs...)
+    benchmarkable = @benchmarkable $func($args...; $kwargs...)
     evaluated = run(benchmarkable,
                     seconds=seconds,
                     evals=evals,
