@@ -9,8 +9,7 @@ Dummy example for showing how to compare benchmarks.
     - 'bm1' is default options (BPCG, cube simple int), bm2 uses vanilla instead.
 """
 
-include("BenchmarksFWnB/src/BenchmarksFWnB.jl")
-using .BenchmarksFWnB
+using BenchmarksFWnB
 
 # vanilla fw
 bm1 = benchmark_FW(lmo_n=20, obj_n=100, obj_k=20, seconds=60)
