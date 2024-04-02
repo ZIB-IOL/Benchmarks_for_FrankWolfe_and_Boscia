@@ -1,19 +1,19 @@
 module BenchmarksFWnB
 
 using BenchmarkTools
-
 using Match
-
 using FrankWolfe
 using LinearAlgebra
-
 using Boscia
 using SCIP
-import Bonobo
 using Statistics
-
 using MathOptInterface
 const MOI = MathOptInterface
+using Random # -> Switch to StableRNG!!
+using SCIP
+using LinearAlgebra
+import HiGHS
+using Statistics
 
 using Random
 
