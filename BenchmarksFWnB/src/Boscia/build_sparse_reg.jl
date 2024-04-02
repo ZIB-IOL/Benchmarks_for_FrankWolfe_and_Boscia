@@ -1,7 +1,7 @@
 """
-Example function building data (f, grad! and lmo) for sparse regression Boscia
+Builds data according to 'Sparse Regression' example in Boscia.jl
 """
-function build_data_sparse_reg(n0::T=20, seed::T=1234) where T<:Integer
+function build_sparse_reg(; n0::T=20, seed::T=1234) where T<:Integer
     # Fix rng seed. Equivalent to 'Random.seed!(seed)' in Julia 1.6
     rng = MersenneTwister(seed)
 

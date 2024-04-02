@@ -1,5 +1,7 @@
-function build_simplex(dim=3, radius=1)
+function build_simplex(; n=3, seed=1234)
+    rng = Random.MersenneTwister(seed)
+    radius = rand(rng, 1:100)
     lmo = FrankWolfe.ProbabilitySimplexOracle(radius)
-    x0 = compute_extreme_point(lmo, zeros(Float64, dim))
+    x0 = compute_extreme_point(lmo, zeros(Float64, n))
     return lmo, x0
-end
+end;

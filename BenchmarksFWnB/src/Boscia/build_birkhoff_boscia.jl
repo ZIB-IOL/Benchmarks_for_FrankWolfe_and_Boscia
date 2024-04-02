@@ -1,5 +1,8 @@
-function build_data_birkhoff(n, k, seed=1234)
-    rng = MersenneTwister(1234)
+"""
+Builds data according to 'Birkhoff' example in Boscia.jl
+"""
+function build_birkhoff_boscia(; n=10, k=5, seed=1234)
+    rng = MersenneTwister(seed)
     
     Xstar = rand(rng, n, n)
     while norm(sum(Xstar, dims=1) .- 1) > 1e-6 || norm(sum(Xstar, dims=2) .- 1) > 1e-6
