@@ -6,7 +6,7 @@ function build_cube_simple_integer(
                                     n=20,
                                     seed=1234,
                                   )
-    rng = MersenneTwister(seed)
+    rng = StableRNG(seed)
 
     diffi = rand(rng, Bool, n) * 0.6 .+ 0.3
 
@@ -35,7 +35,7 @@ function build_cube_simple_mixed(
                                 n=20,
                                 seed=1234,
                                 )
-    rng = MersenneTwister(seed)
+    rng = StableRNG(seed)
 
     diffi = rand(rng, Bool, n) * 0.6 .+ 0.3
     

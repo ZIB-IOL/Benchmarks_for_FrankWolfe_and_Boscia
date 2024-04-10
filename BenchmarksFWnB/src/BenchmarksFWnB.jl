@@ -3,51 +3,54 @@ module BenchmarksFWnB
 using BenchmarkTools
 
 using Match
+using Suppressor
 
 using FrankWolfe
-using LinearAlgebra
+using SparseArrays
 
 using Boscia
 using SCIP
 import Bonobo
 using Statistics
+using Distributions
 
 using MathOptInterface
 const MOI = MathOptInterface
 
 using Random
+using LinearAlgebra
+using StableRNGs
 
 # FrankWolfe
-include("FrankWolfe/SetupFrankWolfe.jl")
+working_dir = @__DIR__
+working_dir = joinpath(working_dir, "FrankWolfe/")
+for dir in readdir(working_dir)
+    if !endswith(dir, ".jl")
+        for file in readdir(joinpath(working_dir, dir))
+            include(joinpath(working_dir, dir, file))
+        end
+    end
+end
 
-using .SetupFrankWolfe
-const SetupFrankWolfe = BenchmarksFWnB.SetupFrankWolfe
-
-const build_simplex = SetupFrankWolfe.build_simplex
-const build_nuclear = SetupFrankWolfe.build_nuclear
-const build_random = SetupFrankWolfe.build_random
-const build_abs_sum = SetupFrankWolfe.build_abs_sum
-
-export build_simplex, build_random, build_abs_sum, build_nuclear
+export build_spectrahedron_lmo, build_spectrahedron_obj
+export build_birkhoff_lmo, build_birkhoff_obj   
+export build_simplex, build_random, build_abs_sum
+export build_nuclear_lmo, build_nuclear_obj
 
 # Boscia
-include("Boscia/SetupBoscia.jl")
+working_dir = @__DIR__
+working_dir = joinpath(working_dir, "Boscia/")
 
-using .SetupBoscia
-const SetupBoscia = BenchmarksFWnB.SetupBoscia
-
-const build_birkhoff_boscia = SetupBoscia.build_birkhoff_boscia
-const build_sparse_reg = SetupBoscia.build_sparse_reg
-const build_cube_simple_integer = SetupBoscia.build_cube_simple_integer
-const build_cube_simple_mixed = SetupBoscia.build_cube_simple_mixed
+for file in readdir(working_dir)
+    if endswith(file, ".jl") && file !== "SetupBoscia.jl"
+        include(joinpath(working_dir, file))
+    end
+end
 
 export build_birkhoff_boscia, build_sparse_reg, build_cube_simple_integer, build_cube_simple_mixed
 
 # Benchmark 
 include("run_benchmark.jl")
-
-const benchmark_FW = BenchmarksFWnB.benchmark_FW
-const benchmark_Boscia = BenchmarksFWnB.benchmark_Boscia
 
 export benchmark_FW, benchmark_Boscia
 export run_benchmark, compare_benchmarks

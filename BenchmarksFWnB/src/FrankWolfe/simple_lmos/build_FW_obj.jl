@@ -11,7 +11,7 @@ end;
 Builds ||Ax + b||^2 objective with random normally distributed A and b.
 """
 function build_random(; n=100, k=30, seed=1234)
-    rng = MersenneTwister(seed)
+    rng = StableRNG(seed)
     
     A = Random.randn(rng, n, k)
     b = Random.randn(rng, n)

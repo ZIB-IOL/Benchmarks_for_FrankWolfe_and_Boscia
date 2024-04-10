@@ -3,7 +3,7 @@ Builds data according to 'Sparse Regression' example in Boscia.jl
 """
 function build_sparse_reg(; n0::T=20, seed::T=1234) where T<:Integer
     # Fix rng seed. Equivalent to 'Random.seed!(seed)' in Julia 1.6
-    rng = MersenneTwister(seed)
+    rng = StableRNG(seed)
 
     # define constants 
     p = 5 * n0;

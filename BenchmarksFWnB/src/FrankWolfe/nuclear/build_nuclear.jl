@@ -1,5 +1,5 @@
 function build_nuclear_obj(; n=500, k=30, seed=1234)
-    rng = MersenneTwister(seed)
+    rng = StableRNG(seed)
 
     # dimension
     nfeat = n
@@ -39,14 +39,8 @@ function build_nuclear_obj(; n=500, k=30, seed=1234)
     return f, grad!
 end;
 
-function build_nuclear_lmo(; n=500)
-    lmo = FrankWolfe.NuclearNormLMO(275_000.0)
-    x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
+function build_nuclear_lmo(; dim=500, rhs=275_000.0)
+    lmo = FrankWolfe.NuclearNormLMO(rhs)
+    x0 = compute_extreme_point(lmo, zeros(Float64, dim, dim))
     return lmo, x0
-end;
-
-function build_nuclear(; n=500, k=30, seed=1234)
-    f, grad! = build_nuclear_obj(n=n, k=k, seed=seed)
-    lmo, x0 = build_nuclear_lmo(n=n)
-    return f, grad!, lmo, x0
 end;
