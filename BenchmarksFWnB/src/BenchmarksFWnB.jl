@@ -1,25 +1,30 @@
 module BenchmarksFWnB
 
+# misc.
 using BenchmarkTools
-
 using Match
 using Suppressor
 
-using FrankWolfe
-using SparseArrays
-
-using Boscia
-using SCIP
-import Bonobo
+# Math
+using LinearAlgebra
+using MathOptInterface
+const MOI = MathOptInterface
 using Statistics
 using Distributions
 
-using MathOptInterface
-const MOI = MathOptInterface
-
-using Random
-using LinearAlgebra
+# RNG 
 using StableRNGs
+using Random
+
+# FrankWolfe
+using FrankWolfe
+using SparseArrays
+
+# Boscia
+using Boscia
+using SCIP
+using SCIP
+import HiGHS
 
 # FrankWolfe
 working_dir = @__DIR__
@@ -36,6 +41,7 @@ export build_spectrahedron_lmo, build_spectrahedron_obj
 export build_birkhoff_lmo, build_birkhoff_obj   
 export build_simplex, build_random, build_abs_sum
 export build_nuclear_lmo, build_nuclear_obj
+export 
 
 # Boscia
 working_dir = @__DIR__
