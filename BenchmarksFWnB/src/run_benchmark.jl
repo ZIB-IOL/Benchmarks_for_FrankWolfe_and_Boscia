@@ -24,7 +24,7 @@ function run_benchmark(func,
                        memory_tolerance=0.01,
                        )
     benchmarkable = @benchmarkable $func($args...; $kwargs...)
-    evaluated = run(benchmarkable,
+    evaluated = @suppress run(benchmarkable,
                     seconds=seconds,
                     evals=evals,
                     samples=samples,
@@ -61,7 +61,7 @@ function compare_benchmarks(bm1,
         _ => (median(bm1), median(bm2))
     end
 
-    @show "Showing $mode comparison:\n"
+    println("Showing $mode comparison:\n")
 
     display(judge(comp_1, comp_2, time_tolerance=time_tolerance, memory_tolerance=memory_tolerance))
 end;
@@ -143,24 +143,29 @@ function benchmark_FW(  ;
         _ => frank_wolfe
     end
 
+    push!(lmo_args, (:seed, seed))
+
     # lmo 
     lmo, x0 = @match lmo begin
-        "simplex" => build_simplex(lmo_args..., seed=seed)
-        "Birkhoff" => build_birkhoff_lmo(lmo_args..., seed=seed)
-        "spectrahedron" => build_spectrahedron_lmo(lmo_args..., seed=seed)
-        "sparse" => build_sparse_lmo(lmo_args...)
-        "nuclear" => build_nuclear_lmo(lmo_args...)
-        _ => build_simplex(lmo_args..., seed=seed)
+        "simplex" => build_simplex(; lmo_args..., seed=seed)
+        "Birkhoff" => build_birkhoff_lmo(; lmo_args..., seed=seed)
+        "spectrahedron" => build_spectrahedron_lmo(; lmo_args..., seed=seed)
+        "sparse" => build_sparse_lmo(; lmo_args...)
+        "nuclear" => build_nuclear_lmo(; lmo_args...)
+        _ => build_simplex(; lmo_args..., seed=seed)
     end
+
+    push!(obj_args, (:seed, seed))
 
     # objective
     f, grad! = @match obj begin 
-        "random MSE" => build_random(obj_args..., seed=seed)
+        "random MSE" => build_random(; obj_args..., seed=seed)
         "abs_sum" => build_abs_sum()
-        "Birkhoff" => build_birkhoff_obj(obj_args..., seed=seed)
-        "spectrahedron" => build_spectrahedron_obj(obj_args..., seed=seed)
-        "nuclear" => build_nuclear_obj(obj_args..., seed=seed)
-        _ => build_random(obj_args..., seed=seed)
+        "Birkhoff" => build_birkhoff_obj(; obj_args..., seed=seed)
+        "spectrahedron" => build_spectrahedron_obj(; obj_args..., seed=seed)
+        "nuclear" => build_nuclear_obj(; obj_args..., seed=seed)
+        "sparse" => build_sparse_obj(; obj_args..., seed=seed)
+        _ => build_random(; obj_args..., seed=seed)
     end
 
     fw_args = [f, grad!, lmo, x0]
@@ -222,13 +227,18 @@ function benchmark_Boscia(  ;
         _ => Boscia.BPCG()
     end
 
+    push!(build_args, (:seed, seed))
+
     # create args for 'Boscia.solve'
     args = @match problem begin
-        "Cube Simple Int" => build_cube_simple_integer(build_args..., seed=seed)
-        "Cube Simple Mix" => build_cube_simple_mixed(build_args..., seed=seed)
-        "Birkhoff" => build_birkhoff_boscia(build_args..., seed=seed)
-        "Sparse reg" => build_sparse_reg(build_args..., seed=seed)
-        _ => build_cube_simple_integer(build_args..., seed=seed)
+        "Cube Simple Int" => build_cube_simple_integer(; build_args..., seed=seed)
+        "Cube Simple Mix" => build_cube_simple_mixed(; build_args..., seed=seed)
+        "Birkhoff" => build_birkhoff_boscia(; build_args..., seed=seed)
+        "Sparse reg" => build_sparse_reg(; build_args...)
+        "Poisson" => build_poisson_reg(; build_args..., seed=seed)
+        "Portfolio" => build_portfolio(; build_args..., seed=seed)
+        "lasso" => build_lasso(; build_args..., seed=seed)
+        _ => build_cube_simple_integer(; build_args..., seed=seed)
     end
 
     # Boscia args and kwargs
@@ -236,7 +246,7 @@ function benchmark_Boscia(  ;
     boscia_kwargs = append!(boscia_kwargs, [(:variant, fw_algo)])
 
     # build and evaluate benchmark run
-    @suppress bm = run_benchmark( Boscia.solve, 
+    bm = run_benchmark( Boscia.solve, 
                         boscia_args, 
                         kwargs=boscia_kwargs,
                         seconds=seconds,

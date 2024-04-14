@@ -9,7 +9,7 @@ Builds data for lasso example for Boscia:
 
 Reference: https://github.com/ZIB-IOL/Boscia.jl/blob/main/examples/lasso.jl 
 """
-function build_lasso_obj(; n=20, M_g=5.0, lambda_0_g=0.0, lambda_2_g=0.0, seed=1234)
+function build_lasso(; n=20, M_g=5.0, lambda_0_g=0.0, lambda_2_g=0.0, seed=1234)
     rng = StableRNG(seed)
 
     p = 5 * n
@@ -116,5 +116,5 @@ function build_lasso_obj(; n=20, M_g=5.0, lambda_0_g=0.0, lambda_2_g=0.0, seed=1
         return storage
     end
 
-    return f, grad, lmo
+    return f, grad!, lmo
 end
