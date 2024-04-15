@@ -14,23 +14,23 @@ Builds and runs the benchmark for a given function and args.
     # Returns
     'evalauted': evaluated benchmark run
 """
-function run_benchmark(func, 
-                       args; 
-                       kwargs=[], 
-                       seconds=3600, 
-                       evals=5, 
-                       samples=1000, 
-                       time_tolerance=0.05, 
-                       memory_tolerance=0.01,
-                       )
-    benchmarkable = @benchmarkable $func($args...; $kwargs...)
-    evaluated = @suppress   run(benchmarkable,
-                                seconds=seconds,
-                                evals=evals,
-                                samples=samples,
-                                time_tolerance=time_tolerance,
-                                memory_tolerance=memory_tolerance,
-                                )
+function run_benchmark( func, 
+                        args; 
+                        kwargs=[], 
+                        seconds=3600, 
+                        evals=5, 
+                        samples=1000, 
+                        time_tolerance=0.05, 
+                        memory_tolerance=0.01,
+                        )
+    benchmarkable   = @benchmarkable    $func($args...; $kwargs...)
+    evaluated       = @suppress         run(benchmarkable,
+                                            seconds=seconds,
+                                            evals=evals,
+                                            samples=samples,
+                                            time_tolerance=time_tolerance,
+                                            memory_tolerance=memory_tolerance,
+                                            )
     return evaluated
 end;
 
@@ -74,7 +74,10 @@ Saves median, mean or minimum of a benchmark to file.
 - 'mode': "median", "mean" or "minimum"
 - 'filepath': path relative to current directory where to save output. Has to be .json file
 """
-function save_benchmark(bm; mode="median", filepath="median.json")
+function save_benchmark(bm; 
+                        mode="median", 
+                        filepath="median.json"
+                        )
 
     @match mode begin
         "median"    => BenchmarkTools.save("$filepath", median(bm))
@@ -101,13 +104,14 @@ If any one of 'lmo' or 'obj' is "nuclear", then both LMO and objective function 
                                                         "spectrahedron"
                                                         "Birkhoff"
                                                         "sparse"
-                                                        "TBD"
 
     - 'obj': objective function to optimize. Choose from:   "random MSE"
                                                             "abs_sum"
                                                             "nuclear"
                                                             "spectrahedron"
-                                                            "TBD"
+                                                            "Birkhoff"
+                                                            "sparse"
+                                                            
     - 'lmo_args': arguments for lmo that can be passed by unpacking
     - 'obj_args': arguments for objective that can be passed by unpacking
     - 'seed': random seed 
@@ -140,6 +144,8 @@ function benchmark_FW(  ;
         "BCG"           => blended_conditional_gradient
         "BPCG"          => FrankWolfe.blended_pairwise_conditional_gradient
         "away"          => away_frank_wolfe
+        "PCG"           => FrankWolfe.pairwise_frank_wolfe
+        "lazy"          => lazified_conditional_gradient
         _               => frank_wolfe
     end
 
