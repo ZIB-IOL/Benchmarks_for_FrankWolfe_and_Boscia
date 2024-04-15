@@ -24,13 +24,13 @@ function run_benchmark(func,
                        memory_tolerance=0.01,
                        )
     benchmarkable = @benchmarkable $func($args...; $kwargs...)
-    evaluated = @suppress run(benchmarkable,
-                    seconds=seconds,
-                    evals=evals,
-                    samples=samples,
-                    time_tolerance=time_tolerance,
-                    memory_tolerance=memory_tolerance,
-                    )
+    evaluated = @suppress   run(benchmarkable,
+                                seconds=seconds,
+                                evals=evals,
+                                samples=samples,
+                                time_tolerance=time_tolerance,
+                                memory_tolerance=memory_tolerance,
+                                )
     return evaluated
 end;
 
@@ -55,10 +55,10 @@ function compare_benchmarks(bm1,
                             memory_tolerance=0.01
                             )
     comp_1, comp_2 = @match mode begin
-        "median" => (median(bm1), median(bm2))
-        "mean" => (mean(bm1), mean(bm2))
-        "minimum" => (minimum(bm1), minimum(bm2))
-        _ => (median(bm1), median(bm2))
+        "median"    => (median(bm1), median(bm2))
+        "mean"      => (mean(bm1), mean(bm2))
+        "minimum"   => (minimum(bm1), minimum(bm2))
+        _           => (median(bm1), median(bm2))
     end
 
     println("Showing $mode comparison:\n")
@@ -77,10 +77,10 @@ Saves median, mean or minimum of a benchmark to file.
 function save_benchmark(bm; mode="median", filepath="median.json")
 
     @match mode begin
-        "median" => BenchmarkTools.save("$filepath", median(bm))
-        "mean" => BenchmarkTools.save("$filepath", mean(bm))
-        "minimum" => BenchmarkTools.save("$filepath", minimum(bm))
-        _ => BenchmarkTools.save("$filepath", median(bm))
+        "median"    => BenchmarkTools.save("$filepath", median(bm))
+        "mean"      => BenchmarkTools.save("$filepath", mean(bm))
+        "minimum"   => BenchmarkTools.save("$filepath", minimum(bm))
+        _           => BenchmarkTools.save("$filepath", median(bm))
     end
 end
 
@@ -136,40 +136,36 @@ function benchmark_FW(  ;
                         memory_tolerance=0.01,
                      )
     fw = @match fw begin
-        "vanilla" => frank_wolfe
-        "BCG" => blended_conditional_gradient
-        "BPCG" => FrankWolfe.blended_pairwise_conditional_gradient
-        "away" => away_frank_wolfe
-        _ => frank_wolfe
+        "vanilla"       => frank_wolfe
+        "BCG"           => blended_conditional_gradient
+        "BPCG"          => FrankWolfe.blended_pairwise_conditional_gradient
+        "away"          => away_frank_wolfe
+        _               => frank_wolfe
     end
-
-    push!(lmo_args, (:seed, seed))
 
     # lmo 
     lmo, x0 = @match lmo begin
-        "simplex" => build_simplex(; lmo_args..., seed=seed)
-        "Birkhoff" => build_birkhoff_lmo(; lmo_args..., seed=seed)
+        "simplex"       => build_simplex(; lmo_args..., seed=seed)
+        "Birkhoff"      => build_birkhoff_lmo(; lmo_args..., seed=seed)
         "spectrahedron" => build_spectrahedron_lmo(; lmo_args..., seed=seed)
-        "sparse" => build_sparse_lmo(; lmo_args...)
-        "nuclear" => build_nuclear_lmo(; lmo_args...)
-        _ => build_simplex(; lmo_args..., seed=seed)
+        "sparse"        => build_sparse_lmo(; lmo_args...)
+        "nuclear"       => build_nuclear_lmo(; lmo_args...)
+        _               => build_simplex(; lmo_args..., seed=seed)
     end
-
-    push!(obj_args, (:seed, seed))
 
     # objective
     f, grad! = @match obj begin 
-        "random MSE" => build_random(; obj_args..., seed=seed)
-        "abs_sum" => build_abs_sum()
-        "Birkhoff" => build_birkhoff_obj(; obj_args..., seed=seed)
+        "random MSE"    => build_random(; obj_args..., seed=seed)
+        "abs_sum"       => build_abs_sum()
+        "Birkhoff"      => build_birkhoff_obj(; obj_args..., seed=seed)
         "spectrahedron" => build_spectrahedron_obj(; obj_args..., seed=seed)
-        "nuclear" => build_nuclear_obj(; obj_args..., seed=seed)
-        "sparse" => build_sparse_obj(; obj_args..., seed=seed)
-        _ => build_random(; obj_args..., seed=seed)
+        "nuclear"       => build_nuclear_obj(; obj_args..., seed=seed)
+        "sparse"        => build_sparse_obj(; obj_args..., seed=seed)
+        _               => build_random(; obj_args..., seed=seed)
     end
 
     fw_args = [f, grad!, lmo, x0]
-    @suppress bm = run_benchmark( fw, 
+    bm = run_benchmark( fw, 
                         fw_args, 
                         kwargs=fw_kwargs, 
                         seconds=seconds,
@@ -220,25 +216,23 @@ function benchmark_Boscia(  ;
                             )
     # FW variant to use
     fw_algo = @match fw begin
-        "BPCG" => Boscia.BPCG()
-        "vanilla" => Boscia.VanillaFrankWolfe()
-        "away" => Boscia.AwayFrankWolfe()
-        "BCG" => Boscia.Blended()
-        _ => Boscia.BPCG()
+        "BPCG"              => Boscia.BPCG()
+        "vanilla"           => Boscia.VanillaFrankWolfe()
+        "away"              => Boscia.AwayFrankWolfe()
+        "BCG"               => Boscia.Blended()
+        _                   => Boscia.BPCG()
     end
-
-    push!(build_args, (:seed, seed))
 
     # create args for 'Boscia.solve'
     args = @match problem begin
-        "Cube Simple Int" => build_cube_simple_integer(; build_args..., seed=seed)
-        "Cube Simple Mix" => build_cube_simple_mixed(; build_args..., seed=seed)
-        "Birkhoff" => build_birkhoff_boscia(; build_args..., seed=seed)
-        "Sparse reg" => build_sparse_reg(; build_args...)
-        "Poisson" => build_poisson_reg(; build_args..., seed=seed)
-        "Portfolio" => build_portfolio(; build_args..., seed=seed)
-        "lasso" => build_lasso(; build_args..., seed=seed)
-        _ => build_cube_simple_integer(; build_args..., seed=seed)
+        "Cube Simple Int"   => build_cube_simple_integer(; build_args..., seed=seed)
+        "Cube Simple Mix"   => build_cube_simple_mixed(; build_args..., seed=seed)
+        "Birkhoff"          => build_birkhoff_boscia(; build_args..., seed=seed)
+        "Sparse reg"        => build_sparse_reg(; build_args..., seed=seed)
+        "Poisson"           => build_poisson_reg(; build_args..., seed=seed)
+        "Portfolio"         => build_portfolio(; build_args..., seed=seed)
+        "lasso"             => build_lasso(; build_args..., seed=seed)
+        _                   => build_cube_simple_integer(; build_args..., seed=seed)
     end
 
     # Boscia args and kwargs
