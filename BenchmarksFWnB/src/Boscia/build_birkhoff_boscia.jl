@@ -12,9 +12,7 @@ Builds data according to 'Birkhoff' example in Boscia.jl
     0 ≤ Y_i ≤ X_i
     0 ≤ θ_i - Y_i ≤ 1 - X_i
 
-    The variables are ordered (Y, X, theta) in the MOI model
-    the objective only uses the last n^2 variables
-    Small dimensions since the size of the problem grows quickly (2 k n^2 + k variables)
+    Small dimensions prefered since the size of the problem grows quickly (2 k n^2 + k variables -> default already > 1000)
 
 Reference: https://github.com/ZIB-IOL/Boscia.jl/blob/main/examples/birkhoff.jl 
 """
@@ -61,7 +59,7 @@ function build_birkhoff_boscia(; n=10, k=5, seed=1234)
             MOI.add_constraint.(o, Y[i], MOI.GreaterThan(0.0))
             MOI.add_constraint.(o, Y[i], MOI.LessThan(1.0))
 
-            # X[i] binary -> X permutation matrix
+            # X binary 
             MOI.add_constraint.(o, X[i], MOI.ZeroOne())
 
             # theta[i] ∈ (0, 1)

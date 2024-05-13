@@ -1,14 +1,5 @@
 """
-Objective in FrankWolfe.jl homepage example.
-"""
-function build_abs_sum() 
-    f(x) = sum(abs2, x)
-    grad!(storage, x) = storage .= 2x
-    return f, grad!
-end;
-
-"""
-Builds ||Ax + b||^2 objective with random normally distributed A and b.
+Builds 1/n * ||Ax + b||^2 objective with normally distributed A and b.
 """
 function build_random(; n=100, k=30, seed=1234)
     rng = StableRNG(seed)

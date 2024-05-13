@@ -9,9 +9,9 @@ Builds K-sparse polytope.
 - 'lmo': FrankWolfe.KSparseLMO(K, rhs)
 - 'x0': extreme point of 'lmo'
 
-# Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/src/polytope_oracles.jl#L5.
+# Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/e880f9f7785b332504f597b874b9101cfe6ebce1/src/polytope_oracles.jl
 """
-function build_sparse_lmo(; K=100, dim=50, rhs=50)
+function build_sparse_lmo(; K=40, dim=100, rhs=1.0)
     lmo = FrankWolfe.KSparseLMO(K, rhs)
     x0 = compute_extreme_point(lmo, zeros(dim))
     return lmo, x0
@@ -28,7 +28,7 @@ Builds objective function as in K-sparse polytope example.
 - 'f': objective function
 - 'grad!': gradient of f
 
-# Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/src/polytope_oracles.jl#L5 
+# Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/e880f9f7785b332504f597b874b9101cfe6ebce1/examples/alm.jl 
 """
 function build_sparse_obj(; n=100, seed=1234)
     rng = StableRNG(seed)

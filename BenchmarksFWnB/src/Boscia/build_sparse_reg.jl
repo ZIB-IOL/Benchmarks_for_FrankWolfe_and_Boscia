@@ -1,17 +1,16 @@
 """
 Builds data according to 'Sparse Regression' example in Boscia.jl
 """
-function build_sparse_reg(; n0::T=20, seed::T=1234) where T<:Integer
-    # Fix rng seed. Equivalent to 'Random.seed!(seed)' in Julia 1.6
+function build_sparse_reg(; n::T=20, seed::T=1234) where T<:Integer
     rng = StableRNG(seed)
 
     # define constants 
-    p = 5 * n0;
-    k = ceil(n0/5);
+    p = 5 * n;
+    k = ceil(n/5);
     lambda_0 = rand(rng, Float64)
     lambda_2 = 10 * rand(rng, Float64)
-    A = rand(rng, n0, p)
-    y = rand(rng, n0)
+    A = rand(rng, n, p)
+    y = rand(rng, n)
     M = 2 * var(A)
 
     # init optimizer for LMO

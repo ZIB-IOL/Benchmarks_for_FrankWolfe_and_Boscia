@@ -15,7 +15,6 @@ function build_spectrahedron_obj(; entries=1000, range=1500, seed=1234)
     rng = StableRNG(seed)
     
     entry_indices = unique!([minmax(rand(rng, 1:range, 2)...) for _ in 1:entries])
-    display(length(entry_indices))
     entry_values = randn(rng, length(entry_indices))
 
     function f(X)
@@ -51,11 +50,7 @@ Builds spectrahedron LMO.
 
 Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/examples/docs_6_spectrahedron.jl#L2 
 """
-function build_spectrahedron_lmo(; n=1500, radius=1.0, seed=1234)
-    rng = StableRNG(seed)
-
-    # radius = rand(rng, 1.0:0.1:10.0)
-
+function build_spectrahedron_lmo(; n=1500, radius=1.0)
     lmo = FrankWolfe.SpectraplexLMO(radius, n, false)
     x0 = compute_extreme_point(lmo, spzeros(n, n))
     return lmo, x0

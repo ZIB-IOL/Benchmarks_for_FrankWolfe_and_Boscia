@@ -1,30 +1,37 @@
 """ 
-Dummy example for showing how to compare benchmarks.
+Dummy example for how to use the benchmark package. 
 
-    # FrankWolfe
-    - 'bm1' is default options (vanilla, simplex, random MSE), bm2 uses BPCG instead.
-    - Should show big improvement
+To run this file, navigate to the directory where 'BenchmarksFWnB.jl' is contained (in the folder 'BenchmarksFWnB') and 
+then execute the command 'julia --project=. ../initial_testing.jl'. This will activate the 'BenchmarksFWnB' project with all
+necessary dependencies and afterwards run the 'initial_testing.jl' file.
 
-    # Boscia
-    - 'bm1' is default options (BPCG, cube simple int), bm2 uses vanilla instead.
+'display(bm1)' prints the evaluated benchmark run to the console -> good for saving to SCRATCH on z1
 """
 
-using BenchmarksFWnB
+using .BenchmarksFWnB
 
-# vanilla fw
-bm1 = benchmark_FW(lmo_n=20, obj_n=100, obj_k=20, seconds=60)
+# for demonstration we limit the runtime to 10 seconds
+bm1 = benchmark_FW(fw="vanilla", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
 
-# blended pairwise 
-bm2 = benchmark_FW(fw="BPCG", lmo_n=20, obj_n=100, obj_k=20, seconds=60)
+# displays benchmark graphic
+display(bm1)
 
-# decides whether bm2 is an improvement over bm1 (or in general, if the benchmark in the first argument is better than the benchmark in the second argument)
-println("Frank-Wolfe \nBPCG vs. Vanilla \n")
-compare_benchmarks(bm2, bm1)
+# compare vanilla against pairwise FW
+bm2 = benchmark_FW(fw="PCG", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
 
-println()
+display(bm2)
 
-bm1 = benchmark_Boscia(n=10, seconds=60)
-bm2 = benchmark_Boscia(fw="vanilla", n=10, seconds=60)
+# shows 'judge' comparison between 'bm1' and 'bm2' w.r.t. the mean values of 'time' and 'memory'
+compare_benchmarks(bm1, bm2, mode="mean")
 
-println("Boscia \nVanilla vs. BPCG \n")
-compare_benchmarks(bm2, bm1)
+# Similarly for Boscia
+bm1 = benchmark_Boscia(problem="Cube Simple Int", seconds=30)
+
+display(bm1)
+
+# default for Boscia is BPCG, so compare against vanilla
+bm2 = benchmark_Boscia(fw="vanilla", problem="Cube Simple Int", seconds=30)
+
+display(bm2)
+
+compare_benchmarks(bm1, bm2)
