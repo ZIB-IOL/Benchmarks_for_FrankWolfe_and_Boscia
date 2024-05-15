@@ -38,8 +38,8 @@ Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark.
     - 'bm': evaluated benchmark run
 """
 function benchmark_FW(  ; 
-                        fw="vanilla", 
-                        lmo="simplex", 
+                        fw="Vanilla", 
+                        lmo="Simplex", 
                         obj="MSE", 
                         lmo_args=[],
                         obj_args=[],
@@ -125,7 +125,7 @@ Sets up benchmark for Boscia, evaluates the run and returns the benchmark.
 """
 function benchmark_Boscia(  ; 
                             fw="BPCG", 
-                            problem="Cube Simple Int",
+                            problem="CubeSimpleInt",
                             build_args=[],
                             seed=1234,
                             boscia_kwargs=[],
@@ -141,7 +141,7 @@ function benchmark_Boscia(  ;
         "Vanilla"           => Boscia.VanillaFrankWolfe()
         "Away"              => Boscia.AwayFrankWolfe()
         "BCG"               => Boscia.Blended()
-        _                   => Boscia.BPCG()
+        _                   => fw
     end
 
     # create args for 'Boscia.solve'
@@ -153,7 +153,7 @@ function benchmark_Boscia(  ;
         "Poisson"           => build_poisson_reg(; build_args..., seed=seed)
         "Portfolio"         => build_portfolio(; build_args..., seed=seed)
         "Lasso"             => build_lasso(; build_args..., seed=seed)
-        _                   => build_cube_simple_integer(; build_args..., seed=seed)
+        _                   => problem
     end
 
     # Boscia args and kwargs

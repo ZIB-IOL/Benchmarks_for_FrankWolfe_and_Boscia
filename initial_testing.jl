@@ -1,4 +1,6 @@
 """ 
+Might be outdated, did not really change this.
+
 Dummy example for how to use the benchmark package. 
 
 To run this file, navigate to the directory where 'BenchmarksFWnB.jl' is contained (in the folder 'BenchmarksFWnB') and 
@@ -11,7 +13,7 @@ necessary dependencies and afterwards run the 'initial_testing.jl' file.
 using BenchmarksFWnB
 
 # for demonstration we limit the runtime to 10 seconds
-bm1 = benchmark_FW(fw="vanilla", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
+bm1 = benchmark_FW(fw="Vanilla", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
 
 # displays benchmark graphic
 display(bm1)
@@ -25,12 +27,12 @@ display(bm2)
 compare_benchmarks(bm1, bm2, mode="mean")
 
 # Similarly for Boscia
-bm1 = benchmark_Boscia(problem="Cube Simple Int", seconds=30)
+bm1 = benchmark_Boscia(problem="CubeSimpleInt", seconds=30)
 
 display(bm1)
 
 # default for Boscia is BPCG, so compare against vanilla
-bm2 = benchmark_Boscia(fw="vanilla", problem="Cube Simple Int", seconds=30)
+bm2 = benchmark_Boscia(fw="Vanilla", problem="CubeSimpleInt", seconds=30)
 
 display(bm2)
 
