@@ -8,7 +8,7 @@ necessary dependencies and afterwards run the 'initial_testing.jl' file.
 'display(bm1)' prints the evaluated benchmark run to the console -> good for saving to SCRATCH on z1
 """
 
-using .BenchmarksFWnB
+using BenchmarksFWnB
 
 # for demonstration we limit the runtime to 10 seconds
 bm1 = benchmark_FW(fw="vanilla", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
