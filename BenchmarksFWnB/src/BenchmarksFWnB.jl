@@ -20,7 +20,6 @@ using SparseArrays
 # Boscia
 using Boscia
 using SCIP
-using SCIP
 import HiGHS
 
 # misc.
