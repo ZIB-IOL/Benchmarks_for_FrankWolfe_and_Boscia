@@ -2,27 +2,45 @@ using BenchmarksFWnB
 
 # read out parameters from slurm
 problem = ARGS[1]
-variant = ARGS[2]
-set_up_idx = ARGS[3] # that depends on what that will be, if it is an integer it will be parse(Int64, ARGS[3])
+fw_variant = ARGS[2]
+setup_idx = ARGS[3]
 branch_path = ARGS[4]
 
 # run the benchmark
+setup = read_setup_Boscia(problem=problem)[parse(Int64, setup_idx)]
 try
-    benchmark = benchmark_Boscia(; fw=variant, problem=problem, setup...)
-    filename = problem * "_" * variant * "_"
+    global bm = benchmark_Boscia(; fw=fw_variant, problem=problem, setup...)
+    global filename = problem * "_" * fw_variant * "_" * setup_idx * "_"
 catch e 
     println(e)
-    file = "boscia_benchmark_" * problem * "_" * variant    
+    file = "boscia_benchmark_" * problem * "_" * fw_variant    
     open(file * ".txt","a") do io
         println(io, e)
     end
-    display("$variant on $problem failed while running the benchmark. No benchmark will be saved!")
-    display("Proceeding with the next iteration.")
+    println("Run of $problem with $fw_variant failed. Process killed.")
+    rethrow(e)
 end
 
-# save the benchmark data
+# saving benchmark
+isdir(branch_path) || mkpath(branch_path)
+println()
+println("Benchmark run successful")
+println()
+sleep(1)
+println("Displaying results for $problem solved with $fw_variant Frank-Wolfe, setup $setup_idx")
+println()
+display(bm)
+println()
+sleep(1)
+println("Saving results...")
 for mode in ["maximum", "mean", "median", "minimum"]
-    filepath = joinpath(branch_path, filename * mode * ".json")
-    save_benchmark(benchmark, mode=mode, filepath=filepath)
+    try
+        save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
+    catch e
+        println("Saving data failed.")
+        rethrow(e)
+    end
 end
+sleep(1)
+println("Saving successful. Results are saved at $branch_path.")
 
