@@ -95,31 +95,38 @@ and prints the comparison.
 - 'fw': FW variant to compare against. If 'nothing', the function compares against all available runs
 - 'problem': problem that was benchmarked. If 'nothing', compares against all problems (should only be done if whole branch was computed and saved)
 """
-function compare_all_Boscia(; benchmark=nothing, fw=nothing, problem=nothing)
+function compare_all_Boscia(; branch=nothing, fw=nothing, problem=nothing)
     working_dir = @__DIR__
 
     # master branch dir
-    master_branch = joinpath(working_dir, "../../results/master/Boscia")
+    master_branch = joinpath(working_dir, "../../results/Boscia/main/")
 
     # new branch
-    stored = false
+    saved = false
     if benchmark === nothing
         # assumes benchmarks stored in 'results/new_branch'
-        new_branch = joinpath(working_dir, "../../results/new_branch/Boscia")
-        stored = true
+        new_branch = joinpath(working_dir, "../../results/Boscia/new_branch/")
+        branch = "new_branch"
+        saved = true
+    else
+        new_branch = joinpath(working_dir, "../../results/Boscia/$branch/")
+        saved = true
     end
 
     # compares stored values for master vs. new branch
-    if stored
+    if saved
         for result_json in readdir(master_branch)
             try
                 bm_master = BenchmarkTools.load(joinpath(master_branch, result_json))[1]
                 bm_new = BenchmarkTools.load(joinpath(new_branch, result_json))[1]
                 prms = bm_master.params
-            catch
+            catch err
+                display("Failed to load benchmark.")
+                display(err)
+                display("Continuing with the next benchmark.")
                 continue
             end
-            display("New branch $result_json vs. Master $result_json")
+            display("$branch $result_json vs. Master $result_json")
             compare_benchmarks( bm_master, 
                                 bm_new, 
                                 mode=nothing,
@@ -197,27 +204,30 @@ Compares a FrankWolfe benchmark 'bm' against previous values in all modes (mean,
 and prints the comparison.
 
 # Arguments
-- 'bm': computed benchmark. If 'nothing', the values of 'results/master' and 'results/new_branch' are compared
+- 'branch': name of the branch folder to compare against. Alternatively, an evaluated benchmark run can be passed to compare against saved values.
 - 'fw': FW variant to compare against. If 'nothing', the function compares against all available runs
 - 'obj': objective that was benchmarked
 - 'lmo': LMO that was benchmarked
 """
-function compare_all_FW(; benchmark=nothing, fw=nothing, obj="MSE", lmo="Simplex")
+function compare_all_FW(; branch=nothing, fw=nothing, obj="MSE", lmo="Simplex")
     working_dir = @__DIR__
 
     # master branch dir
-    master_branch = joinpath(working_dir, "../../results/master/FrankWolfe/")
+    master_branch = joinpath(working_dir, "../../results/FrankWolfe/master/")
 
     # new branch
     stored = false
-    if benchmark === nothing
+    if branch === nothing
         # assumes benchmarks stored in 'results/new_branch'
-        new_branch = joinpath(working_dir, "../../results/new_branch/FrankWolfe/")
-        stored = true
+        new_branch = joinpath(working_dir, "../../results/FrankWolfe/new_branch/")
+        saved = true
+    else
+        new_branch = joinpath(working_dir, "../../results/FrankWolfe/$branch/")
+        saved = true
     end
 
     # compares stored values for master vs. new branch
-    if stored
+    if saved
         for result_json in readdir(master_branch)
             try
                 bm_master = BenchmarkTools.load(joinpath(master_branch, result_json))[1]
@@ -237,7 +247,7 @@ function compare_all_FW(; benchmark=nothing, fw=nothing, obj="MSE", lmo="Simplex
         return 
     end
 
-    # benchmark was passed
+    # evaluated benchmark was passed
     try
         obj ∈ ["MSE", "Nuclear", "Spectrahedron", "Birkhoff", "Sparse"]
         lmo ∈ ["Simplex", "Nuclear", "Spectrahedron", "Birkhoff", "Sparse"]
@@ -247,7 +257,6 @@ function compare_all_FW(; benchmark=nothing, fw=nothing, obj="MSE", lmo="Simplex
 
     # compares against specific Frank-Wolfe variant of specific problem
     if fw !== nothing
-        
         display("Freshly computed vs. Master")
         display("objective: $obj")
         display("LMO: $lmo")
@@ -276,7 +285,7 @@ function compare_all_FW(; benchmark=nothing, fw=nothing, obj="MSE", lmo="Simplex
     end
 
     # compare against all Frank-Wolfe variants for given problem
-    display("Freshly computed vs. Master")
+    display("Branch vs. Master")
     display("Objective: $obj")
     display("LMO: $lmo")
     for result_json in readdir(master_branch)
@@ -304,3 +313,61 @@ function compare_all_FW(; benchmark=nothing, fw=nothing, obj="MSE", lmo="Simplex
     return
 end
 
+
+"""
+Given a Bosica problem, reads out and returns a vector of setups for this problem.
+"""
+function read_setup_Boscia(; problem="CubeSimpleInt")
+    problems = ["CubeSimpleInt", "CubeSimpleMix", "Birkhoff", "SparseReg", "Portfolio", "Poisson", "Lasso"]
+    if problem in problems
+        path = joinpath(@__DIR__, "Boscia/setups_Boscia.jld2")
+        setups = JLD2.load(path, problem)
+        return setups
+    else
+        error("Invalid problem, no setup for $problem available.")
+    end
+end
+
+
+"""
+Given an objective and LMO pair, reads out and returns a vector of setups for this problem.
+"""
+function read_setup_FW(; objective="MSE", lmo="Simplex")
+    objectives = ["MSE", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron"]
+    lmos = ["Simplex", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron"]
+    if objective in objectives
+        if lmo in lmos
+            try
+                path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
+                setups = JLD2.load(path, objective * "_" * lmo)
+                return setups
+            catch 
+                error("Invalid objective + LMO combination. No setup for $objective $lmo available.")
+            end
+        else
+            error("Invalid LMO, no setup for $lmo available.")
+        end
+    else
+        error("Invalid objective, no setup $objective available.")
+    end
+end
+
+
+"""
+For a given 'problem', adds 'setup' to the vector containing all setups used in benchmark runs.
+"""
+function add_setup(problem, setup)
+    if contains(problem, '_')
+        # FrankWolfe
+        path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
+        setups_dict = load(path)
+        append!(setups_dict[problem], [setup])
+        save(path, setups_dict)
+    else
+        # Boscia
+        path = joinpath(@__DIR__, "Boscia/setups_Boscia.jld2")
+        setups_dict = load(path)
+        append!(setups_dict[problem], [setup])
+        save(path, setups_dict)
+    end
+end

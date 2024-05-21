@@ -1,5 +1,5 @@
 """ 
-Might be outdated, did not really change this.
+WILL UPDATE ACCORDINGLY ONCE EVERYTHING IS PROPERLY SET UP.
 
 Dummy example for how to use the benchmark package. 
 
@@ -16,6 +16,7 @@ using BenchmarksFWnB
 bm1 = benchmark_FW(fw="Vanilla", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
 
 # displays benchmark graphic
+display("Benchmark for ")
 display(bm1)
 
 # compare vanilla against pairwise FW

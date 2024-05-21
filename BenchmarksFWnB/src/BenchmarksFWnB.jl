@@ -25,12 +25,13 @@ import HiGHS
 # misc.
 using Match
 using Suppressor
+using JLD2
 
 # FrankWolfe
 working_dir = @__DIR__
 working_dir = joinpath(working_dir, "FrankWolfe/")
 for dir in readdir(working_dir)
-    if !endswith(dir, ".jl")
+    if !contains(dir, ".jl")
         for file in readdir(joinpath(working_dir, dir))
             include(joinpath(working_dir, dir, file))
         end
@@ -48,7 +49,9 @@ working_dir = @__DIR__
 working_dir = joinpath(working_dir, "Boscia/")
 
 for file in readdir(working_dir)
-    include(joinpath(working_dir, file))
+    if endswith(file, ".jl")
+        include(joinpath(working_dir, file))
+    end
 end
 
 export build_birkhoff_boscia, build_sparse_reg, build_cube_simple_integer, build_cube_simple_mixed
@@ -57,11 +60,11 @@ export build_lasso, build_poisson_reg, build_portfolio, build_sparse_reg
 # Benchmark 
 include("evaluate_benchmark.jl")
 include("auxiliary_functions.jl")
-include("run_all_benchmarks.jl")
 
 export benchmark_FW, benchmark_Boscia
-export run_benchmark, compare_benchmarks, save_benchmark, compare_all_Boscia, compare_all_FW
-export run_all_Boscia, run_all_FW
+export run_benchmark, compare_benchmarks, save_benchmark
+export compare_all_Boscia, compare_all_FW
+export read_setup_Boscia, read_setup_FW, add_setup
 
 end # module BenchmarksFWnB
 

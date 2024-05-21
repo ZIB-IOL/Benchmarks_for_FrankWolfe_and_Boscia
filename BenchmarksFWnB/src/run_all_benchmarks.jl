@@ -29,13 +29,17 @@ function run_all_Boscia(; branch="new")
 
     # determine which branch to save the output to. Only writes to 'master' if explicitly passed as such
     working_dir = @__DIR__
-    if branch === "master"
-        branch_path = joinpath(working_dir, "../../results/master/Boscia/")
-    elseif branch === "new" || branch === "new_branch"
-        branch_path = joinpath(working_dir, "../../results/new_branch/Boscia/")
+    if branch === "main"
+        display("You are about to write to the 'main' directory. Do you wish to continue? (y/n)")
+        choice = readline()
+        if choice in ["Y", "y"]
+            branch_path = joinpath(working_dir, "../../results/Boscia/main/")
+        else
+            error("Killing process.")
+        end
     else
-        display("Invalid choice of branch. Defaulting to 'new_branch'.")
-        branch_path = joinpath(working_dir, "../../results/new_branch/Boscia/")
+        branch_path = joinpath(working_dir, "../../results/Boscia/$branch/")
+        isdir(branch_path) || mkdir(branch_path)
     end
 
     # run each problem + FW variant combination
@@ -101,12 +105,21 @@ function run_all_FW(; branch="new")
     # determine which branch to write to.
     working_dir = @__DIR__
     if branch === "master"
-        branch_path = joinpath(working_dir, "../../results/master/FrankWolfe/")
-    elseif branch === "new" || branch === "new_branch"
-        branch_path = joinpath(working_dir, "../../results/new_branch/FrankWolfe/")
+        display("You are about to write to the master branch directory. Are you sure you want to proceed? (y/n)")
+        choice = readline()
+        if choice in ["Y", "y"]
+            branch_path = joinpath(working_dir, "../../results/FrankWolfe/master/")
+        else
+            error("Killing the process.")
+        end
     else
-        display("Invalid choice of branch. Defaulting to 'new_branch'.")
-        branch_path = joinpath(working_dir, "../../results/new_branch/FrankWolfe/")
+        branch_path = joinpath(working_dir, "../../results/FrankWolfe/$branch/")
+        if isdir(branch_folder)
+            branch_path = branch_folder
+        else
+            mkdir(branch_folder)
+            branch_path = branch_folder
+        end
     end
     
     for obj_lmo_idx in eachindex(objectives)
@@ -115,7 +128,7 @@ function run_all_FW(; branch="new")
 
         for variant in fw_variants
             try
-                benchmark_FW(; fw=variant, obj=objective, lmo=lmo, setup...)
+                bm = benchmark_FW(; fw=variant, obj=objective, lmo=lmo, setup...)
                 filename = variant * "_" * objective * "_" * lmo * "_"
             catch
                 display("$variant on $objective objective and $lmo LMO failed while running the benchmark. No benchmark will be saved!")
