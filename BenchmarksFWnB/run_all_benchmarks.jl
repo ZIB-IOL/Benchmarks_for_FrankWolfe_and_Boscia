@@ -29,6 +29,7 @@ function run_all_Boscia(; branch="new")
 
     # determine which branch to save the output to. Only writes to 'master' if explicitly passed as such
     working_dir = @__DIR__
+<<<<<<< HEAD:BenchmarksFWnB/src/run_all_benchmarks.jl
     if branch === "main"
         display("You are about to write to the 'main' directory. Do you wish to continue? (y/n)")
         choice = readline()
@@ -40,6 +41,15 @@ function run_all_Boscia(; branch="new")
     else
         branch_path = joinpath(working_dir, "../../results/Boscia/$branch/")
         isdir(branch_path) || mkdir(branch_path)
+=======
+    if branch === "master"
+        branch_path = joinpath(working_dir, "../results/master/Boscia/")
+    elseif branch === "new" || branch === "new_branch"
+        branch_path = joinpath(working_dir, "../results/new_branch/Boscia/")
+    else
+        display("Invalid choice of branch. Defaulting to 'new_branch'.")
+        branch_path = joinpath(working_dir, "../results/new_branch/Boscia/")
+>>>>>>> 88c65b70319af9bb09defd5ae577f4c981385347:BenchmarksFWnB/run_all_benchmarks.jl
     end
 
     # run each problem + FW variant combination
@@ -49,20 +59,8 @@ function run_all_Boscia(; branch="new")
 
         for variant in fw_variants
             # continue in case benchmark errors
-            try
-                benchmark = benchmark_Boscia(; fw=variant, problem=problem, setup...)
-                filename = problem * "_" * variant * "_"
-            catch
-                display("$variant on $problem failed while running the benchmark. No benchmark will be saved!")
-                display("Proceeding with the next iteration.")
-                continue
-            end
-            
-            # save each mode
-            for mode in ["maximum", "mean", "median", "minimum"]
-                filepath = joinpath(branch_path, filename * mode * ".json")
-                save_benchmark(benchmark, mode=mode, filepath=filepath)
-            end
+            @show problem_idx, variant, set_up_idx
+            run(`sbatch sbatch_boscia_benchmark.sh $problem_idx $variant $set_up_idx $branch_path`)
         end
     end
 end
@@ -105,6 +103,7 @@ function run_all_FW(; branch="new")
     # determine which branch to write to.
     working_dir = @__DIR__
     if branch === "master"
+<<<<<<< HEAD:BenchmarksFWnB/src/run_all_benchmarks.jl
         display("You are about to write to the master branch directory. Are you sure you want to proceed? (y/n)")
         choice = readline()
         if choice in ["Y", "y"]
@@ -120,6 +119,14 @@ function run_all_FW(; branch="new")
             mkdir(branch_folder)
             branch_path = branch_folder
         end
+=======
+        branch_path = joinpath(working_dir, "../results/master/FrankWolfe/")
+    elseif branch === "new" || branch === "new_branch"
+        branch_path = joinpath(working_dir, "../results/new_branch/FrankWolfe/")
+    else
+        display("Invalid choice of branch. Defaulting to 'new_branch'.")
+        branch_path = joinpath(working_dir, "../results/new_branch/FrankWolfe/")
+>>>>>>> 88c65b70319af9bb09defd5ae577f4c981385347:BenchmarksFWnB/run_all_benchmarks.jl
     end
     
     for obj_lmo_idx in eachindex(objectives)
@@ -127,6 +134,7 @@ function run_all_FW(; branch="new")
         lmo         = lmos[obj_lmo_idx]
 
         for variant in fw_variants
+<<<<<<< HEAD:BenchmarksFWnB/src/run_all_benchmarks.jl
             try
                 bm = benchmark_FW(; fw=variant, obj=objective, lmo=lmo, setup...)
                 filename = variant * "_" * objective * "_" * lmo * "_"
@@ -140,6 +148,10 @@ function run_all_FW(; branch="new")
                 filepath = joinpath(branch_path, filename * mode * ".json")
                 save_benchmark(benchmark, mode=mode, filepath=filepath)
             end
+=======
+            @show variant, objective, lmo
+            run(`sbatch sbatch_frank_wolfe_benchmark.sh $variant $objective $lmo $set_up_idx $branch_path`)
+>>>>>>> 88c65b70319af9bb09defd5ae577f4c981385347:BenchmarksFWnB/run_all_benchmarks.jl
         end
     end
 end
