@@ -1,40 +1,26 @@
 """ 
-WILL UPDATE ACCORDINGLY ONCE EVERYTHING IS PROPERLY SET UP.
+Dummy file for running benchmarks from command line.
 
-Dummy example for how to use the benchmark package. 
+Running this file via 'include("initial_testing.jl") from the REPL works as intended.
+Currently, there is only one setup for Frank-Wolfe and Boscia, respectively, to showcase the functionality. 
+These setups will likely change over time so be wary of longer runtimes, etc.
 
-To run this file, navigate to the directory where 'BenchmarksFWnB.jl' is contained (in the folder 'BenchmarksFWnB') and 
-then execute the command 'julia --project=. ../initial_testing.jl'. This will activate the 'BenchmarksFWnB' project with all
-necessary dependencies and afterwards run the 'initial_testing.jl' file.
-
-'display(bm1)' prints the evaluated benchmark run to the console -> good for saving to SCRATCH on z1
+The way 'run(...)' is presented here is how it will be called by the .sh script when calling the functions 'run_all_FW' and 'run_all_Boscia', respectively.
 """
+branch_path = joinpath(@__DIR__, "results/Boscia/Dummy")
+variant = "Away"
+problem = "CubeSimpleInt"
+setup_idx = 1
 
-using BenchmarksFWnB
+# updates/creates Manifest.toml for the project locally
+run(`julia --project=BenchmarksFWnB -e 'using Pkg; Pkg.update()'`)
+println("Updated Manifest.toml. Proceeding with Boscia example.\n")
+run(`julia --project=BenchmarksFWnB BenchmarksFWnB/run_boscia_benchmark.jl $problem $variant $setup_idx $branch_path`)
 
-# for demonstration we limit the runtime to 10 seconds
-bm1 = benchmark_FW(fw="Vanilla", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
+println("Proceeding with Frank-Wolfe example.")
 
-# displays benchmark graphic
-display("Benchmark for ")
-display(bm1)
-
-# compare vanilla against pairwise FW
-bm2 = benchmark_FW(fw="PCG", obj_args=[(:n, 100), (:k, 30)], lmo_args=[(:n, 30)], seconds=10)
-
-display(bm2)
-
-# shows 'judge' comparison between 'bm1' and 'bm2' w.r.t. the mean values of 'time' and 'memory'
-compare_benchmarks(bm1, bm2, mode="mean")
-
-# Similarly for Boscia
-bm1 = benchmark_Boscia(problem="CubeSimpleInt", seconds=30)
-
-display(bm1)
-
-# default for Boscia is BPCG, so compare against vanilla
-bm2 = benchmark_Boscia(fw="Vanilla", problem="CubeSimpleInt", seconds=30)
-
-display(bm2)
-
-compare_benchmarks(bm1, bm2)
+branch_path = joinpath(@__DIR__, "results/FrankWolfe/Dummy")
+objective = "MSE"
+lmo = "Simplex"
+variant = "Lazy"
+run(`julia --project=BenchmarksFWnB BenchmarksFWnB/run_frank_wolfe_benchmark.jl $variant $objective $lmo $setup_idx $branch_path`)
