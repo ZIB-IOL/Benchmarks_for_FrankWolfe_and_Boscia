@@ -17,16 +17,6 @@ function run_all_Boscia(; branch="new")
                         "Lasso"
                       ]
 
-    # setup for each problem. To change Boscia kwargs use '(:boscia_kwargs, [(:kwarg1, val), ...])'
-    problem_setups  = [ [(:build_args, [(:n, 20)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 10), (:k, 5)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20), (:p, 20), (:k, 10)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 30)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20), (:M_g, 5.0), (:lambda_0_g, 0.0), (:lambda_2_g, 0.0)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)],
-                      ]
-
     # determine which branch to save the output to. Only writes to 'master' if explicitly passed as such
     working_dir = @__DIR__
     if branch === "main"
@@ -50,7 +40,7 @@ function run_all_Boscia(; branch="new")
             setups = read_setup_Boscia(problem=problem)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
-                run(`sbatch sbatch_boscia_benchmark.sh $problem $variant $setup_idx $branch_path`)
+                run(`sbatch sbatch_boscia.sh $problem $variant $setup_idx $branch_path`)
             end
         end
     end
@@ -106,7 +96,7 @@ function run_all_FW(; branch="new")
             setups = read_setup_FW(objective=objective, lmo=lmo)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
-                run(`sbatch sbatch_frank_wolfe_benchmark.sh $variant $objective $lmo $setup_idx $branch_path`)
+                run(`sbatch sbatch_frank_wolfe.sh $variant $objective $lmo $setup_idx $branch_path`)
             end
         end
     end
