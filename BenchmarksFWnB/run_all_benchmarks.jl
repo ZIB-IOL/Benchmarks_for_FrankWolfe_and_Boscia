@@ -50,7 +50,7 @@ function run_all_Boscia(; branch="new")
             setups = read_setup_Boscia(problem=problem)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
-                run(`sbatch sbatch_boscia_benchmark.sh $problem $variant $setup_idx $branch_path`)
+                run(`sbatch sbatch_boscia.sh $problem $variant $setup_idx $branch_path`)
             end
         end
     end
@@ -106,7 +106,7 @@ function run_all_FW(; branch="new")
             setups = read_setup_FW(objective=objective, lmo=lmo)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
-                run(`sbatch sbatch_frank_wolfe_benchmark.sh $variant $objective $lmo $setup_idx $branch_path`)
+                run(`sbatch sbatch_frank_wolfe.sh $variant $objective $lmo $setup_idx $branch_path`)
             end
         end
     end
