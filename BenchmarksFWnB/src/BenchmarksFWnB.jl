@@ -63,9 +63,11 @@ include("auxiliary_functions.jl")
 include("../run_all_benchmarks.jl")
 
 export benchmark_FW, benchmark_Boscia
+
 export run_benchmark, compare_benchmarks, save_benchmark
 export compare_all_Boscia, compare_all_FW
-export read_setup_Boscia, read_setup_FW, add_setup
+export read_setup_Boscia, read_setup_FW, add_setup, reset_setups
+
 export run_all_FW, run_all_Boscia
 
 end # module BenchmarksFWnB

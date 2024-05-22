@@ -3,6 +3,7 @@ Builds K-sparse polytope.
 
 # Arguments
 - 'K': number of values
+- 'dim': dimension
 - 'rhs': value of the right-hand side
 
 # Returns

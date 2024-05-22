@@ -1,7 +1,7 @@
 """
 Builds and returns the BirkhoffPolytopeLMO and a starting point.
 """
-function build_birkhoff_lmo(; n=100, seed=1234)
+function build_birkhoff_lmo(; n=10, seed=1234)
     rng = StableRNG(seed)
 
     lmo = FrankWolfe.BirkhoffPolytopeLMO()
@@ -13,7 +13,7 @@ end
 """
 Builds the objective function as in birkhoff_polytope example in FrankWolfe.jl
 """
-function build_birkhoff_obj(; n=100, seed=1234)
+function build_birkhoff_obj(; n=10, seed=1234)
     rng = StableRNG(seed)
     
     xpi = rand(rng, n*n)

@@ -371,3 +371,45 @@ function add_setup(problem, setup)
         save(path, setups_dict)
     end
 end
+
+
+"""
+Resets the setup vector for a given problem. If "all" is passed for problem, resets all problem setups.
+"""
+function reset_setups(; package="FrankWolfe", problem="MSE_Simplex")
+    if package === "FrankWolfe"
+        setups_path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
+        setups = load(setups_path)
+        if problem === "all"
+            for (key, _) in setups
+                setups[key] = []
+            end
+            save(setups_path, setups)
+        else
+            try
+                global setups[problem] = []
+            catch e
+                println("Invalid problem was given.")
+                rethrow(e)
+            end
+            save(setups_path, setups)
+        end
+    else  # Boscia  
+        setups_path = joinpath(@__DIR__, "Boscia/setups_Boscia.jld2")
+        setups = load(setups_path)
+        if problem === "all"
+            for (key, _) in setups
+                setups[key] = []
+            end
+            save(setups_path, setups)
+        else
+            try
+                global setups[problem] = []
+            catch e
+                println("Invalid problem was given.")
+                rethrow(e)
+            end
+            save(setups_path, setups)
+        end
+    end
+end

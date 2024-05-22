@@ -2,7 +2,7 @@
 Builds spectrahedron objective. 
 
 # Arguments
-- 'n': range of entry values
+- 'range': range of entry values
 - 'entries': number of known entries
 
 # Return 
