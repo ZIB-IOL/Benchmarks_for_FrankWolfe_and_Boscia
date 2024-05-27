@@ -28,7 +28,7 @@
 #SBATCH --mail-type=FAIL
 
 # You may not place any commands before the last SBATCH directive
-julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 &> frank_wolfe_benchmark_$1_$2_$SLURM_JOB_ID.txt
+julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 $5 &> frank_wolfe_benchmark_$1_$2_$3_$SLURM_JOB_ID.txt
 
 # Finish the script
 exit 0
