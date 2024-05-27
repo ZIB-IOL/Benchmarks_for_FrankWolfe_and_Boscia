@@ -17,16 +17,6 @@ function run_all_Boscia(; branch="new")
                         "Lasso"
                       ]
 
-    # setup for each problem. To change Boscia kwargs use '(:boscia_kwargs, [(:kwarg1, val), ...])'
-    problem_setups  = [ [(:build_args, [(:n, 20)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 10), (:k, 5)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20), (:p, 20), (:k, 10)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 30)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)], 
-                        [(:build_args, [(:n, 20), (:M_g, 5.0), (:lambda_0_g, 0.0), (:lambda_2_g, 0.0)]), (:seconds, 3600), (:evals, 5), (:samples, 10000), (:seed, 1234)],
-                      ]
-
     # determine which branch to save the output to. Only writes to 'master' if explicitly passed as such
     working_dir = @__DIR__
     if branch === "main"
@@ -39,8 +29,9 @@ function run_all_Boscia(; branch="new")
         end
     else
         branch_path = joinpath(working_dir, "../results/Boscia/$branch/")
-        isdir(branch_path) || mkdir(branch_path)
     end
+
+    isdir(branch_path) || mkpath(branch_path)
 
     # run each problem + FW variant combination
     for problem_idx in eachindex(problems)
@@ -95,8 +86,9 @@ function run_all_FW(; branch="new")
         end
     else
         branch_path = joinpath(working_dir, "../results/FrankWolfe/$branch/")
-        isdir(branch_path) || mkdir(branch_path)
     end
+
+    isdir(branch_path) || mkpath(branch_path)
     
     for obj_lmo_idx in eachindex(objectives)
         objective   = objectives[obj_lmo_idx]
