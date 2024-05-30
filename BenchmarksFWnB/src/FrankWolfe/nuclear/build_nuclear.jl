@@ -23,7 +23,9 @@ function build_nuclear_obj(; n=500, k=30, seed=1234)
     # def nuc-norm 
     nucnorm(Xmat) = sum(abs(σi) for σi in svdvals(Xmat))
     
-    missing_entries = unique!([(rand(1:nobs), rand(1:nfeat)) for _ in 1:10000])
+    @assert rank(Xreal) == r
+
+    missing_entries = unique!([(rand(rng, 1:nobs), rand(rng, 1:nfeat)) for _ in 1:10000])
     present_entries = [(i, j) for i in 1:nobs, j in 1:nfeat if (i, j) ∉ missing_entries]
 
     # objective and gradient 

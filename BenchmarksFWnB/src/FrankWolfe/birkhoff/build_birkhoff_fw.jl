@@ -19,12 +19,12 @@ function build_birkhoff_obj(; n=10, seed=1234)
     xpi = rand(rng, n*n)
     xpi = reshape(xpi, n, n)
 
-    function cf(x)
+    function f(x)
         return norm(x .- xpi)^2 / n^2
     end
 
-    function cgrad!(storage, x)
+    function grad!(storage, x)
         return @. storage = (2 * (x - xpi)) / n^2
     end
-    return cf, cgrad!
+    return f, grad!
 end
