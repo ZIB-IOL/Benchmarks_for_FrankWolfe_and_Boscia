@@ -29,8 +29,9 @@ function run_all_Boscia(; branch="new")
         end
     else
         branch_path = joinpath(working_dir, "../results/Boscia/$branch/")
-        isdir(branch_path) || mkdir(branch_path)
     end
+
+    isdir(branch_path) || mkpath(branch_path)
 
     # run each problem + FW variant combination
     for problem_idx in eachindex(problems)
@@ -85,8 +86,9 @@ function run_all_FW(; branch="new")
         end
     else
         branch_path = joinpath(working_dir, "../results/FrankWolfe/$branch/")
-        isdir(branch_path) || mkdir(branch_path)
     end
+
+    isdir(branch_path) || mkpath(branch_path)
     
     for obj_lmo_idx in eachindex(objectives)
         objective   = objectives[obj_lmo_idx]
