@@ -17,11 +17,10 @@ function build_birkhoff_obj(; n=10, seed=1234)
     rng = StableRNG(seed)
     
     xpi = rand(rng, n*n)
-    total = sum(xpi)
     xpi = reshape(xpi, n, n)
 
     function cf(x)
-        return ((x .- xpi)' * (x .- xpi)) / n^2
+        return norm(x .- xpi)^2 / n^2
     end
 
     function cgrad!(storage, x)
