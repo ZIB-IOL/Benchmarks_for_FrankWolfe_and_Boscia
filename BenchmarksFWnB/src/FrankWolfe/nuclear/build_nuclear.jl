@@ -21,7 +21,7 @@ function build_nuclear_obj(; n=500, k=30, seed=1234)
     end
 
     # def nuc-norm 
-    nucnorm(Xmat) = sum(abs(σi) for σi in svdvals(Xmat))
+    # nucnorm(Xmat) = sum(abs(σi) for σi in svdvals(Xmat))
     
     @assert rank(Xreal) == r
 
