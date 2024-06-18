@@ -26,6 +26,7 @@ import HiGHS
 using Match
 using Suppressor
 using JLD2
+import Pkg
 
 # FrankWolfe
 working_dir = @__DIR__

@@ -19,13 +19,12 @@ function run_all_Boscia(; branch="new")
 
     # update package version to branch
     try 
-        using Pkg
         Pkg.add(url="https://github.com/ZIB-IOL/Boscia.jl", rev=branch)
     catch e
         rethrow(e)
     end
 
-    # determine which branch to save the output to. Only writes to 'master' if explicitly passed as such
+    # determine which branch to save the output to. Only writes to 'main' if explicitly passed as such
     working_dir = @__DIR__
     if branch === "main"
         display("You are about to write to the 'main' directory. Do you wish to continue? (y/n)")
@@ -84,7 +83,6 @@ function run_all_FW(; branch="new")
 
     # update package version to branch version
     try 
-        using Pkg
         Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
     catch e
         rethrow(e)
