@@ -1,5 +1,7 @@
 """
 Builds data according to 'Cube Simple LMO' example in 'approx_planted_point.jl' for Boscia, integer version.
+
+num vars: n
 """
 function build_cube_simple_integer(
                                     ;

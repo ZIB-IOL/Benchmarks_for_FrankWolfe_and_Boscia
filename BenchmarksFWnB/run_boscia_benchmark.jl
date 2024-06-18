@@ -8,6 +8,12 @@ branch_path = ARGS[4]
 
 # run the benchmark
 setup = read_setup_Boscia(problem=problem)[parse(Int64, setup_idx)]
+
+# on some problems BCG errors during post-solve. We disable it until we find a fix
+if fw_variant === "BCG"
+    append!(setup, [(:boscia_kwargs, [(:use_postsolve, false)])])
+end
+
 try
     global bm = benchmark_Boscia(; fw=fw_variant, problem=problem, setup...)
     global filename = problem * "_" * fw_variant * "_" * setup_idx * "_"
@@ -23,7 +29,6 @@ end
 
 # saving benchmark
 isdir(branch_path) || mkpath(branch_path)
-println()
 println("Benchmark run successful")
 println()
 sleep(1)

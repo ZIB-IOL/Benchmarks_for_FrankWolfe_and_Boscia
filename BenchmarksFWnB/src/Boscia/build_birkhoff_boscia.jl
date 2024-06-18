@@ -12,7 +12,7 @@ Builds data according to 'Birkhoff' example in Boscia.jl
     0 ≤ Y_i ≤ X_i
     0 ≤ θ_i - Y_i ≤ 1 - X_i
 
-    Small dimensions prefered since the size of the problem grows quickly (2 k n^2 + k variables -> default already > 1000)
+dim: 2k n^2 + k
 
 Reference: https://github.com/ZIB-IOL/Boscia.jl/blob/main/examples/birkhoff.jl 
 """

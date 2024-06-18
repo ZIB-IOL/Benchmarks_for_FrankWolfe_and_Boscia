@@ -16,10 +16,14 @@ Builds data for poisson_reg example for Boscia
     It is assumed that y_i is poisson distributed and that the log 
     of its expected value can be computed linearly.
 
+num vars: 2p + 1 = 2n + 1
+
 Reference: https://github.com/ZIB-IOL/Boscia.jl/blob/main/examples/poisson_reg.jl 
 """
-function build_poisson_reg(; n=20, p=20, k=10, seed=1234)
+function build_poisson_reg(; n=20, k=10, seed=1234)
     rng = StableRNG(seed)
+
+    p = n
 
     ws = rand(rng, p)
 

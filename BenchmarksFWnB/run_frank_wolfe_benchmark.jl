@@ -23,7 +23,6 @@ end
 
 # saving benchmark
 isdir(branch_path) || mkpath(branch_path)
-println()
 println("Benchmark run successful")
 println()
 sleep(1)

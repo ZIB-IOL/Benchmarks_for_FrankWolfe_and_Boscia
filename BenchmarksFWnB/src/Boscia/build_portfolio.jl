@@ -1,6 +1,8 @@
 """
 Builds data for portfolio example for Boscia.
 
+num vars: n
+
 Reference: https://github.com/ZIB-IOL/Boscia.jl/blob/main/examples/portfolio.jl 
 """
 function build_portfolio(; n=30, seed=1234)

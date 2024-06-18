@@ -25,5 +25,5 @@ Manifest.toml
 
 # Misc. files
 TODO.txt
-example_boscia.jl
 benchmark_setups.jl
+initial_testing.jl

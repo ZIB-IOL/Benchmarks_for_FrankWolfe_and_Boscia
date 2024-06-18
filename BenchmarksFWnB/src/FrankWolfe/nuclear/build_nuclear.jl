@@ -19,9 +19,6 @@ function build_nuclear_obj(; n=500, k=30, seed=1234)
             Xreal[i, j] = sum(X_gen_cols[j, k] * X_gen_rows[k, i] * svals[k] for k in 1:r)
         end
     end
-
-    # def nuc-norm 
-    nucnorm(Xmat) = sum(abs(σi) for σi in svdvals(Xmat))
     
     @assert rank(Xreal) == r
 
@@ -41,8 +38,8 @@ function build_nuclear_obj(; n=500, k=30, seed=1234)
     return f, grad!
 end;
 
-function build_nuclear_lmo(; dim=500, rhs=275_000.0)
+function build_nuclear_lmo(; n=500, rhs=275_000.0)
     lmo = FrankWolfe.NuclearNormLMO(rhs)
-    x0 = compute_extreme_point(lmo, zeros(Float64, dim, dim))
+    x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
     return lmo, x0
 end;

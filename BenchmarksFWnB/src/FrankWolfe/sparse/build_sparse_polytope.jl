@@ -12,9 +12,9 @@ Builds K-sparse polytope.
 
 # Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/e880f9f7785b332504f597b874b9101cfe6ebce1/src/polytope_oracles.jl
 """
-function build_sparse_lmo(; K=40, dim=100, rhs=1.0)
+function build_sparse_lmo(; K=40, n=100, rhs=1.0)
     lmo = FrankWolfe.KSparseLMO(K, rhs)
-    x0 = compute_extreme_point(lmo, zeros(dim))
+    x0 = compute_extreme_point(lmo, zeros(n))
     return lmo, x0
 end
 

@@ -7,6 +7,8 @@ Builds data for lasso example for Boscia:
     ∑ z_i <= k 
     z_i ∈ {0,1} for i = 1,..,p 
 
+num vars: 2p = 2(5n) = 10n
+
 Reference: https://github.com/ZIB-IOL/Boscia.jl/blob/main/examples/lasso.jl 
 """
 function build_lasso(; n=20, M_g=5.0, lambda_0_g=0.0, lambda_2_g=0.0, seed=1234)

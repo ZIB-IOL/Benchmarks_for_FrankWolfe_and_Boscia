@@ -1,5 +1,7 @@
 """
 Builds data according to 'Sparse Regression' example in Boscia.jl
+
+num vars: 2p = 2(5n) = 10n
 """
 function build_sparse_reg(; n::T=20, seed::T=1234) where T<:Integer
     rng = StableRNG(seed)

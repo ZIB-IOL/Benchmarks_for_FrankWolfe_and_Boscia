@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Give your job a name, so you can recognize it in the queue overview
-#SBATCH --job-name=BosciaBench
+#SBATCH --job-name=FrankWolfeBench
 
 # Define, how many nodes you need. Here, we ask for 1 node.
 # Each node has 16 or 20 CPU cores.
@@ -14,11 +14,11 @@
 # force-stopped by the server. If you make the expected time too long, it will
 # take longer for the job to start. Here, we say the job will take 5 minutes.
 #              d-hh:mm:ss
-#SBATCH --time=0-03:00:00
+#SBATCH --time=0-05:00:00
 
 # Define the partition on which the job shall run. May be omitted.
 # How much memory you need.
-#SBATCH --partition=small  # Specify the desired partition, e.g. gpu, cpu or big (GPU is reserved for ML stuff)
+#SBATCH --partition=big  # Specify the desired partition, e.g. gpu, cpu or big (GPU is reserved for ML stuff)
 ## We want to run on htc-cmp[101-148], exlude all others
 #SBATCH --exclude=htc-cmp[001-008,024-025,501-532]
 
