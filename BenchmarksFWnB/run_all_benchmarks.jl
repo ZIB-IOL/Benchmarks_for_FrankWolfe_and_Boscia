@@ -20,7 +20,7 @@ function run_all_Boscia(; branch="new")
     # update package version to branch
     try 
         using Pkg
-        Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
+        Pkg.add(url="https://github.com/ZIB-IOL/Boscia.jl", rev=branch)
     catch e
         rethrow(e)
     end
@@ -118,6 +118,4 @@ function run_all_FW(; branch="new")
             end
         end
     end
-    # checkout back to master
-    run(`git checkout master`)
 end
