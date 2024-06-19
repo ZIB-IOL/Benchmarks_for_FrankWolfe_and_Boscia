@@ -1,3 +1,6 @@
+using JLD2
+using Pkg
+
 """
 Runs each Boscia problem with each available FW variant and saves the result to the desired directory.
 """
@@ -45,7 +48,7 @@ function run_all_Boscia(; branch="new")
         problem = problems[problem_idx]
         for variant in fw_variants
             @show problem, variant
-            setups = read_setup_Boscia(problem=problem)
+            setups = load("src/Boscia/setups_Boscia.jld2", problem)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
                 run(`sbatch sbatch_boscia.sh $problem $variant $setup_idx $branch_path`)
@@ -109,7 +112,7 @@ function run_all_FW(; branch="new")
         lmo         = lmos[obj_lmo_idx]
         for variant in fw_variants
             @show variant, objective, lmo
-            setups = read_setup_FW(objective=objective, lmo=lmo)
+            setups = load("src/FrankWolfe/setups_FW.jld2", objective * "_" * lmo)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
                 run(`sbatch sbatch_frank_wolfe.sh $variant $objective $lmo $setup_idx $branch_path`)
