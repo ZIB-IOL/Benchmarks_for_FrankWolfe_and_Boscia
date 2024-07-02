@@ -1,4 +1,4 @@
-"""
+    """
 Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark. 
 
     # Arguments
@@ -158,6 +158,7 @@ function benchmark_Boscia(  ;
 
     # Boscia args and kwargs
     boscia_args     = [args...]
+    boscia_kwargs   = convert(Vector{Tuple{Symbol, Any}}, boscia_kwargs)
     boscia_kwargs   = append!(boscia_kwargs, [(:variant, fw_algo)])
 
     # build and evaluate benchmark run
