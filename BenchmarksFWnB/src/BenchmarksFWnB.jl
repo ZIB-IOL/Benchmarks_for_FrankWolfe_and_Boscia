@@ -39,11 +39,11 @@ for dir in readdir(working_dir)
     end
 end
 
-export build_spectrahedron_lmo, build_spectrahedron_obj
-export build_birkhoff_lmo, build_birkhoff_obj   
-export build_simplex, build_random
-export build_nuclear_lmo, build_nuclear_obj
-export build_sparse_lmo, build_sparse_obj
+# export build_spectrahedron_lmo, build_spectrahedron_obj
+# export build_birkhoff_lmo, build_birkhoff_obj   
+# export build_simplex, build_random
+# export build_nuclear_lmo, build_nuclear_obj
+# export build_sparse_lmo, build_sparse_obj
 
 # Boscia
 working_dir = @__DIR__
@@ -55,8 +55,8 @@ for file in readdir(working_dir)
     end
 end
 
-export build_birkhoff_boscia, build_sparse_reg, build_cube_simple_integer, build_cube_simple_mixed
-export build_lasso, build_poisson_reg, build_portfolio, build_sparse_reg
+# export build_birkhoff_boscia, build_sparse_reg, build_cube_simple_integer, build_cube_simple_mixed
+# export build_lasso, build_poisson_reg, build_portfolio, build_sparse_reg
 
 # Benchmark 
 include("evaluate_benchmark.jl")
