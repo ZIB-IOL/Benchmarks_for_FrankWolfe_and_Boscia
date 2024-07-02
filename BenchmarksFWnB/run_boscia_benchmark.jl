@@ -10,7 +10,7 @@ branch_path = ARGS[4]
 setup = read_setup_Boscia(problem=problem)[parse(Int64, setup_idx)]
 
 # on some problems BCG errors during post-solve. We disable it until we find a fix
-if fw_variant === "BCG"
+if fw_variant === "BCG" && contains(branch_path, "/main")
     append!(setup, [(:boscia_kwargs, [(:use_postsolve, false)])])
 end
 
