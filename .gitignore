@@ -27,3 +27,4 @@ Manifest.toml
 TODO.txt
 benchmark_setups.jl
 initial_testing.jl
+stored_setups.jl
