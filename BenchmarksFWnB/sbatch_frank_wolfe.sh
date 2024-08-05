@@ -22,7 +22,8 @@
 ## We want to run on htc-cmp[101-148], exlude all others
 #SBATCH --exclude=htc-cmp[001-008,024-025,501-532]
 
-#SBATCH --output=/home/htc/dkuzinow/SCRATCH/my_output_folder/%j.log
+# ATTENTION! CHANGE THIS LINE TO YOUR OWN USERNAME AND FOLDER
+#SBATCH --output=/home/htc/my_username/SCRATCH/my_output_folder/%j.log
 
 # Turn on mail notification. There are many possible self-explaining values:
 # NONE, BEGIN, END, FAIL, ALL (including all aforementioned)

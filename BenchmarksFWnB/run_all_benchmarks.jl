@@ -68,6 +68,7 @@ function run_all_FW(; branch="new")
                     "BCG",
                     "PCG",
                     "BPCG",
+                    "DICG",
                   ]
 
     objectives  = [ "MSE",
