@@ -14,13 +14,15 @@
 # force-stopped by the server. If you make the expected time too long, it will
 # take longer for the job to start. Here, we say the job will take 5 minutes.
 #              d-hh:mm:ss
-#SBATCH --time=0-12:00:00
+#SBATCH --time=1-12:00:00
 
 # Define the partition on which the job shall run. May be omitted.
 # How much memory you need.
 #SBATCH --partition=big  # Specify the desired partition, e.g. gpu, cpu or big (GPU is reserved for ML stuff)
 ## We want to run on htc-cmp[101-148], exlude all others
 #SBATCH --exclude=htc-cmp[001-008,024-025,501-532]
+
+#SBATCH --output=/home/htc/dkuzinow/SCRATCH/my_output_folder/%j.log
 
 # Turn on mail notification. There are many possible self-explaining values:
 # NONE, BEGIN, END, FAIL, ALL (including all aforementioned)
