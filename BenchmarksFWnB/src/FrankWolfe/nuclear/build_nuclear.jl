@@ -1,4 +1,4 @@
-function build_nuclear_obj(; n=500, k=30, seed=1234)
+function build_nuclear_obj(; n=50, k=10, seed=1234)
     rng = StableRNG(seed)
 
     # dimension
@@ -38,7 +38,7 @@ function build_nuclear_obj(; n=500, k=30, seed=1234)
     return f, grad!
 end;
 
-function build_nuclear_lmo(; n=500, rhs=275_000.0)
+function build_nuclear_lmo(; n=50, rhs=275_000.0)
     lmo = FrankWolfe.NuclearNormLMO(rhs)
     x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
     return lmo, x0
