@@ -23,7 +23,7 @@
 #SBATCH --exclude=htc-cmp[001-008,024-025,501-532]
 
 # ATTENTION! CHANGE THIS LINE TO YOUR OWN USERNAME AND FOLDER
-#SBATCH --output=/home/htc/my_username/SCRATCH/my_output_folder/%j.log
+#SBATCH --output=/home/htc/dkuzinow/SCRATCH/FrankWolfe_Bench/%j.log
 
 # Turn on mail notification. There are many possible self-explaining values:
 # NONE, BEGIN, END, FAIL, ALL (including all aforementioned)

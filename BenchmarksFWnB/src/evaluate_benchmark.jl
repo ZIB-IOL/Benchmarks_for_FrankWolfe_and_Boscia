@@ -58,6 +58,7 @@ function benchmark_FW(  ;
         "Away"          => away_frank_wolfe
         "PCG"           => FrankWolfe.pairwise_frank_wolfe
         "Lazy"          => lazified_conditional_gradient
+        "DICG"          => FrankWolfe.decomposition_invariant_conditional_gradient
         _               => fw
     end
 
