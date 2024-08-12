@@ -1,5 +1,0 @@
-n,min time,median time,mean time,max time,memory
-100,10.83 ms,11.64 ms,11.69 ms,16.51 ms,2.33 MiB
-250,3.73 s,4.16 s,4.17 s,5.25 s,12.19 MiB
-500,483.13 s,516.08 s,511.43 s,526.15 s,118.76 MiB
-700,1345.23 s,1475.11 s,1472.02 s,1537.22 s,279.97 MiB
