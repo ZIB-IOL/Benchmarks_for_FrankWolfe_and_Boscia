@@ -1,6 +1,0 @@
-n,min time,median time,mean time,max time,memory
-50,1.78e+02 ms,1.91e+02 ms,1.93e+02 ms,3.06e+02 ms,1.83e+01 MB
-100,6.05e+04 ms,6.12e+04 ms,6.34e+04 ms,7.48e+04 ms,7.15e+02 MB
-150,6.86e+06 ms,7.07e+06 ms,7.01e+06 ms,7.12e+06 ms,9.51e+02 MB
-200,7.57e+06 ms,7.67e+06 ms,7.66e+06 ms,7.75e+06 ms,1.40e+03 MB
-250,8.30e+06 ms,8.40e+06 ms,8.40e+06 ms,8.49e+06 ms,1.99e+03 MB
