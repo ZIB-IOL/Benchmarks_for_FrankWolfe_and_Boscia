@@ -1,4 +1,5 @@
 using BenchmarksFWnB
+using Printf
 
 # read out parameters from slurm
 fw_variant = ARGS[1]
@@ -25,13 +26,17 @@ end
 isdir(branch_path) || mkpath(branch_path)
 println("Benchmark run successful")
 println()
-sleep(1)
+
 println("Displaying results for $fw_variant Frank-Wolfe on $lmo LMO with $objective objective, setup $setup_idx")
 println()
 display(bm)
 println()
-sleep(1)
+
 println("Saving results...")
+
+# save results for different modes
+save_geomean(bm, joinpath(branch_path, filename * "geomean" * ".json"))
+
 for mode in ["maximum", "mean", "median", "minimum"]
     try
         save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
@@ -40,6 +45,6 @@ for mode in ["maximum", "mean", "median", "minimum"]
         rethrow(e)
     end
 end
-sleep(1)
+
 println("Saving successful. Results are saved at $branch_path.")
 

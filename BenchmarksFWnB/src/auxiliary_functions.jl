@@ -1,71 +1,4 @@
 """
-Builds and runs the benchmark for a given function and args.
-
-    # Arguments
-    - 'func': function to benchmark
-    - 'args': arguments for 'func'
-    - 'kwargs': keyword arguments to be used in 'func'
-    - 'seconds': time limit for benchmark run
-    - 'evals': number of evaluations per sample
-    - 'samples: number of samples to take for benchmark
-    - 'time_tolerance': percent tolerance on measured time
-    - 'memory_tolerance': percent tolerance on memory consumption
-
-    # Returns
-    'evalauted': evaluated benchmark run
-"""
-function run_benchmark( func, 
-                        args; 
-                        kwargs=[], 
-                        seconds=3600, 
-                        evals=5, 
-                        samples=1000, 
-                        time_tolerance=0.05, 
-                        memory_tolerance=0.01,
-                        )
-    benchmarkable   = @benchmarkable    $func($args...; $kwargs...)
-    evaluated       = @suppress         run(benchmarkable,
-                                            seconds=seconds,
-                                            evals=evals,
-                                            samples=samples,
-                                            time_tolerance=time_tolerance,
-                                            memory_tolerance=memory_tolerance,
-                                            )
-    return evaluated
-end;
-
-
-"""
-Compares benchmark 1 (bm1) against benchmark 2 (bm2) and decides whether bm1 is an improvement over bm2.
-
-    # Arguments
-    - 'bm1': evaluated benchmark to compare
-    - 'bm2': evaluated benchmark against which to compare
-    - 'mode': determines what to compare. Choose from "median", "mean", "minimum" or "maximum".
-    - 'time_tolerance': percent tolerance on measured time up to which comparison is neutral
-    - 'memory_tolerance': percent tolerance on memory consumption up to which comparison is neutral
-
-    # Prints
-    - decision whether bm1 is better than bm2 w.r.t. time and memory (including percent improvement)
-"""
-function compare_benchmarks(bm1, 
-                            bm2; 
-                            mode="median",
-                            time_tolerance=0.05, 
-                            memory_tolerance=0.01
-                            )
-    comp_1, comp_2 = @match mode begin
-        "median"    => (median(bm1), median(bm2))
-        "mean"      => (mean(bm1), mean(bm2))
-        "minimum"   => (minimum(bm1), minimum(bm2))
-        "maximum"   => (maximum(bm1), maximum(bm2))
-        _           => (bm1, bm2)
-    end
-    display(judge(comp_1, comp_2, time_tolerance=time_tolerance, memory_tolerance=memory_tolerance))
-end;
-
-
-"""
 Saves median, mean or minimum of a benchmark to file.
 
 # Arguments
@@ -91,7 +24,29 @@ function save_benchmark(bm;
     end
 end
 
-# TODO: create function to compare benchmarks
+
+"""
+Saves the geometric mean 
+
+# Arguments
+- 'bm': evaluated benchmark run
+- 'filepath': where to save the file
+"""
+function save_geomean(bm, filepath)
+    # geometric mean 
+    function geom_shifted_mean(xs; shift=big"0.0")
+        n = length(xs)
+        r = prod(xi + shift for xi in xs)
+        return Float64(r^(1/n) - shift)
+    end
+
+    # save geometric mean shifted by 1 second (1e9 ns)
+    geomean_time = geom_shifted_mean(bm.times, shift=big"1e9")
+    geomean_gc_time = geom_shifted_mean(bm.gctimes, shift=big"1e9")
+    trial_estimate = BenchmarkTools.TrialEstimate(bm.parameters, geomean_time, geomean_gc_time, bm.memory, bm.allocs)
+    BenchmarkTools.save(filepath, trial_estimate)
+end
+
 
 """
 Given a Bosica problem, reads out and returns a vector of setups for this problem.
@@ -191,4 +146,4 @@ function reset_setups(; package="FrankWolfe", problem="MSE_Simplex")
             save(setups_path, setups)
         end
     end
-end
+end;

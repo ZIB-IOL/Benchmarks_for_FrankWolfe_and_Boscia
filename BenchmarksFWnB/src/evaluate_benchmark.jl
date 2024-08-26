@@ -174,3 +174,40 @@ function benchmark_Boscia(  ;
                         )
     return bm
 end;
+
+
+"""
+Builds and runs the benchmark for a given function and args.
+
+    # Arguments
+    - 'func': function to benchmark
+    - 'args': arguments for 'func'
+    - 'kwargs': keyword arguments to be used in 'func'
+    - 'seconds': time limit for benchmark run
+    - 'evals': number of evaluations per sample
+    - 'samples: number of samples to take for benchmark
+    - 'time_tolerance': percent tolerance on measured time
+    - 'memory_tolerance': percent tolerance on memory consumption
+
+    # Returns
+    'evalauted': evaluated benchmark run
+"""
+function run_benchmark( func, 
+                        args; 
+                        kwargs=[], 
+                        seconds=3600, 
+                        evals=5, 
+                        samples=1000, 
+                        time_tolerance=0.05, 
+                        memory_tolerance=0.01,
+                        )
+    benchmarkable   = @benchmarkable    $func($args...; $kwargs...)
+    evaluated       = @suppress         run(benchmarkable,
+                                            seconds=seconds,
+                                            evals=evals,
+                                            samples=samples,
+                                            time_tolerance=time_tolerance,
+                                            memory_tolerance=memory_tolerance,
+                                            )
+    return evaluated
+end;

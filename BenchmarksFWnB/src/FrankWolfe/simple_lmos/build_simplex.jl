@@ -1,8 +1,7 @@
 """
 Builds Simplex LMO with dimension n and radius.
 """
-function build_simplex(; n=3, radius=1.0, seed=1234)
-    rng = Random.MersenneTwister(seed)
+function build_simplex(; n=30, radius=1.0, seed=1234)
     lmo = FrankWolfe.ProbabilitySimplexOracle(radius)
     x0 = compute_extreme_point(lmo, zeros(Float64, n))
     return lmo, x0
