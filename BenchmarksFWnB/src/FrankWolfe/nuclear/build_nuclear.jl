@@ -1,4 +1,9 @@
-function build_nuclear_obj(; n=50, k=10, seed=1234)
+
+"""
+Builds NuclearNormLMO with upper bound 'rhs', and Nuclear objective (collaborative filtering) 
+with a random matrix of dimension n^2 and rank k.
+"""
+function build_nuclear(; n=50, k=10, rhs=275_000, seed=1234)
     rng = StableRNG(seed)
 
     # dimension
@@ -35,11 +40,9 @@ function build_nuclear_obj(; n=50, k=10, seed=1234)
         end
         return nothing
     end
-    return f, grad!
-end;
 
-function build_nuclear_lmo(; n=50, rhs=275_000.0)
     lmo = FrankWolfe.NuclearNormLMO(rhs)
     x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
-    return lmo, x0
+
+    return f, grad!, lmo, x0
 end;

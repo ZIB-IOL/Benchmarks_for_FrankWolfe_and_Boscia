@@ -19,7 +19,7 @@ catch e
         println(io, e)
     end
     display("$fw_variant on $objective objective and $lmo LMO failed while running the benchmark. No benchmark will be saved!")
-    rethrow(e)  # To kill the process we should rethrow the error. Printing would continue executing the file, trying to save the benchmark.
+    rethrow(e)  # Rethrow error to kill the process
 end
 
 # saving benchmark

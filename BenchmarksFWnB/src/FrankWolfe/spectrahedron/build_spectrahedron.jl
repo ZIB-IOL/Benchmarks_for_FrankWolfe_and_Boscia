@@ -1,19 +1,24 @@
+
 """
-Builds spectrahedron objective. 
+Builds spectrahedron objective and LMO
 
 # Arguments
-- 'range': range of entry values
+- 'range': range of entry values. Also functions as LMO dim
 - 'entries': number of known entries
 
 # Return 
 - 'f': objective function
 - 'grad!': gradient of f
+- 'lmo': FrankWolfe.SpectraplexLMO of dimension 'range'
+- 'x0': starting vertex
 
 Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/examples/docs_6_spectrahedron.jl#L2 
 """
-function build_spectrahedron_obj(; entries=1000, range=1500, seed=1234)
+function build_spectrahedron(; entries=1000, range=1500, seed=1234)
     rng = StableRNG(seed)
     
+    n = range
+
     entry_indices = unique!([minmax(rand(rng, 1:range, 2)...) for _ in 1:entries])
     entry_values = randn(rng, length(entry_indices))
 
@@ -35,23 +40,8 @@ function build_spectrahedron_obj(; entries=1000, range=1500, seed=1234)
         return storage ./= length(entry_values)
     end
 
-    return f, grad!
-end
-
-"""
-Builds spectrahedron LMO.
-
-# Arguments
-- 'n': dimension
-- 'seed': random seed to be used
-
-# Returns 
-- 'lmo': FrankWolfe.SpectraplexLMO of dimension n
-
-Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/examples/docs_6_spectrahedron.jl#L2 
-"""
-function build_spectrahedron_lmo(; n=1500, radius=1.0)
     lmo = FrankWolfe.SpectraplexLMO(radius, n, false)
     x0 = compute_extreme_point(lmo, spzeros(n, n))
-    return lmo, x0
+
+    return f, grad!, lmo, x0
 end

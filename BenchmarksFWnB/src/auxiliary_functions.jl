@@ -33,18 +33,21 @@ Saves the geometric mean
 - 'filepath': where to save the file
 """
 function save_geomean(bm, filepath)
-    # geometric mean 
-    function geom_shifted_mean(xs; shift=big"0.0")
-        n = length(xs)
-        r = prod(xi + shift for xi in xs)
-        return Float64(r^(1/n) - shift)
-    end
-
     # save geometric mean shifted by 1 second (1e9 ns)
     geomean_time = geom_shifted_mean(bm.times, shift=big"1e9")
     geomean_gc_time = geom_shifted_mean(bm.gctimes, shift=big"1e9")
     trial_estimate = BenchmarkTools.TrialEstimate(bm.parameters, geomean_time, geomean_gc_time, bm.memory, bm.allocs)
     BenchmarkTools.save(filepath, trial_estimate)
+end
+
+
+"""
+Computes geometric mean of given sequence with shift.
+"""
+function geom_shifted_mean(xs; shift=big"0.0")
+    n = length(xs)
+    r = prod(xi + shift for xi in xs)
+    return Float64(r^(1/n) - shift)
 end
 
 

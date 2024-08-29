@@ -1,28 +1,11 @@
-"""
-Builds K-sparse polytope.
-
-# Arguments
-- 'K': number of values
-- 'dim': dimension
-- 'rhs': value of the right-hand side
-
-# Returns
-- 'lmo': FrankWolfe.KSparseLMO(K, rhs)
-- 'x0': extreme point of 'lmo'
-
-# Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/e880f9f7785b332504f597b874b9101cfe6ebce1/src/polytope_oracles.jl
-"""
-function build_sparse_lmo(; n=100, K=40, rhs=1.0)
-    lmo = FrankWolfe.KSparseLMO(K, rhs)
-    x0 = compute_extreme_point(lmo, zeros(n))
-    return lmo, x0
-end
 
 """
 Builds objective function as in K-sparse polytope example. 
 
 # Arguments
 - 'n': dimension of the problem
+- 'K': number of values
+- 'rhs': value of the right-hand side
 - 'seed': random seed
 
 # Returns
@@ -31,7 +14,7 @@ Builds objective function as in K-sparse polytope example.
 
 # Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/e880f9f7785b332504f597b874b9101cfe6ebce1/examples/alm.jl 
 """
-function build_sparse_obj(; n=100, seed=1234)
+function build_sparse(; n=100, K=40, rhs=1.0, seed=1234)
     rng = StableRNG(seed)
 
     xpi = rand(rng, 1:100, n)
@@ -44,5 +27,8 @@ function build_sparse_obj(; n=100, seed=1234)
         @. storage = 2 * (x - xp)
     end
 
-    return f, grad!
+    lmo = FrankWolfe.KSparseLMO(K, rhs)
+    x0 = compute_extreme_point(lmo, zeros(n))
+
+    return f, grad!, lmo, x0
 end

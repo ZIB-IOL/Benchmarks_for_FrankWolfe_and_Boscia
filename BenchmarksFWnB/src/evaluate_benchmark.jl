@@ -1,8 +1,8 @@
-    """
+"""
 Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark. 
 
-    # Arguments
-    - 'fw': Frank-Wolfe variant to use. Choose from:    "BPCG"
+# Arguments
+- 'fw': Frank-Wolfe variant to use. Choose from:        "BPCG"
                                                         "Vanilla" 
                                                         "Away" 
                                                         "BCG"
@@ -10,39 +10,29 @@ Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark.
                                                         "PCG"
                                                         Frank-Wolfe function
 
-    - 'lmo': LMO over which to optimize. Choose from:   "Simplex"
+- 'problem': LMO over which to optimize. Choose from:   "Simplex"
                                                         "Nuclear"
                                                         "Spectrahedron"
                                                         "Birkhoff"
                                                         "Sparse"
-                                                        (lmo, x0) tuple for custom lmo and starting point
-
-    - 'obj': objective function to optimize. Choose from:   "MSE"
-                                                            "Nuclear"
-                                                            "Spectrahedron"
-                                                            "Birkhoff"
-                                                            "Sparse"
-                                                            (f, grad!) tuple for custom objective
+                                                        (f, grad!, lmo, x0) tuple for custom lmo and starting point
                                                             
-    - 'lmo_args': arguments for lmo that can be passed by unpacking
-    - 'obj_args': arguments for objective that can be passed by unpacking
-    - 'seed': random seed used for StableRNG
-    - 'fw_kwargs': keyword arguments for FrankWolfe algorithm, e.g. [(:epsilon, 1e-7), (:max_iteration, 5000)]
-    - 'seconds': time limit for benchmark run
-    - 'evals': number of function evaluations per sample
-    - 'samples': number of samples to take for benchmark
-    - 'time_tolerance': percent tolerance for measured time
-    - 'memory_tolerance': percent tolerance for measured memory usage
+- 'build_args::Vector{Tuple{Symbol, Any}}': Vector used to build args, e.g. [(:n, 100), (:rhs, 100_000)]
+- 'seed': random seed used for StableRNG
+- 'fw_kwargs': keyword arguments for FrankWolfe algorithm, e.g. [(:epsilon, 1e-7), (:max_iteration, 5000)]
+- 'seconds': time limit for benchmark run
+- 'evals': number of function evaluations per sample
+- 'samples': number of samples to take for benchmark
+- 'time_tolerance': percent tolerance for measured time
+- 'memory_tolerance': percent tolerance for measured memory usage
 
     # Returns 
     - 'bm': evaluated benchmark run
 """
 function benchmark_FW(  ; 
                         fw="Vanilla", 
-                        lmo="Simplex", 
-                        obj="MSE", 
-                        lmo_args=[],
-                        obj_args=[],
+                        problem="Simplex",
+                        build_args=[],
                         seed=1234, 
                         fw_kwargs=[],
                         seconds=3600,
@@ -63,26 +53,15 @@ function benchmark_FW(  ;
     end
 
     # lmo 
-    lmo, x0 = @match lmo begin
-        "Simplex"       => build_simplex(; lmo_args..., seed=seed)
-        "Birkhoff"      => build_birkhoff_lmo(; lmo_args..., seed=seed)
-        "Spectrahedron" => build_spectrahedron_lmo(; lmo_args...)
-        "Sparse"        => build_sparse_lmo(; lmo_args...)
-        "Nuclear"       => build_nuclear_lmo(; lmo_args...)
-        _               => lmo
+    fw_args = @match problem begin
+        "Simplex"       => build_simplex(; build_args..., seed=seed)
+        "Birkhoff"      => build_birkhoff_fw(; build_args..., seed=seed)
+        "Spectrahedron" => build_spectrahedron(; build_args...)
+        "Sparse"        => build_sparse(; build_args...)
+        "Nuclear"       => build_nuclear(; build_args...)
+        _               => problem
     end
 
-    # objective
-    f, grad! = @match obj begin 
-        "MSE"           => build_random(; obj_args..., seed=seed)
-        "Birkhoff"      => build_birkhoff_obj(; obj_args..., seed=seed)
-        "Spectrahedron" => build_spectrahedron_obj(; obj_args..., seed=seed)
-        "Sparse"        => build_sparse_obj(; obj_args..., seed=seed)
-        "Nuclear"       => build_nuclear_obj(; obj_args..., seed=seed)
-        _               => obj
-    end
-
-    fw_args = [f, grad!, lmo, x0]
     bm = run_benchmark( fw, 
                         fw_args, 
                         kwargs=fw_kwargs, 
@@ -146,7 +125,7 @@ function benchmark_Boscia(  ;
     end
 
     # create args for 'Boscia.solve'
-    args = @match problem begin
+    boscia_args = @match problem begin
         "CubeSimpleInt"     => build_cube_simple_integer(; build_args..., seed=seed)
         "CubeSimpleMix"     => build_cube_simple_mixed(; build_args..., seed=seed)
         "Birkhoff"          => build_birkhoff_boscia(; build_args..., seed=seed)
@@ -158,7 +137,6 @@ function benchmark_Boscia(  ;
     end
 
     # Boscia args and kwargs
-    boscia_args     = [args...]
     boscia_kwargs   = convert(Vector{Tuple{Symbol, Any}}, boscia_kwargs)
     boscia_kwargs   = append!(boscia_kwargs, [(:variant, fw_algo)])
 
@@ -201,13 +179,47 @@ function run_benchmark( func,
                         time_tolerance=0.05, 
                         memory_tolerance=0.01,
                         )
-    benchmarkable   = @benchmarkable    $func($args...; $kwargs...)
-    evaluated       = @suppress         run(benchmarkable,
-                                            seconds=seconds,
-                                            evals=evals,
-                                            samples=samples,
-                                            time_tolerance=time_tolerance,
-                                            memory_tolerance=memory_tolerance,
-                                            )
-    return evaluated
+
+    f, grad!, lmo, x0 = args
+    
+    track_f = FrankWolfe.TrackingObjective(f);
+    track_grad! = FrankWolfe.TrackingGradient(grad!)
+    track_lmo = FrankWolfe.TrackingLMO(lmo)
+
+    obj_counts      = Vector{Int64}([])
+    lmo_counts      = Vector{Int64}([])
+    grad_counts     = Vector{Int64}([])
+    dual_gaps       = Vector{Float64}([])
+    memory          = Vector{Float64}([])
+    times           = Vector{Float64}([])
+
+    for _ in 1:10
+        track_lmo.counter = 0
+        track_grad!.counter = 0
+        track_f.counter = 0
+        v = copy(x0)
+        global evaluated = @benchmark begin 
+            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, $v; max_iteration=Inf, timeout=1_000, $kwargs...) 
+        end samples=1 evals=1 seconds=3600 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
+
+        # Tracking is done once each for eval run and taken sample, so need to half
+        push!(obj_counts, Int(track_f.counter / 2))
+        push!(lmo_counts, Int(track_lmo.counter / 2))
+        push!(grad_counts, Int(track_grad!.counter / 2))
+        push!(dual_gaps, dual_gap)
+        # save time in seconds
+        push!(times, evaluated.times[1] / 1e9)
+        if dual_gap < 1e-7
+            # memory in GB, only if the run was successful (< 1000 seconds minutes)
+            push!(memory, evalauted.memory / 1e9)
+        end
+    end
+
+    params = evalauted.params
+    params.samples = 10
+    params.evals=1
+    params.seconds=3600
+    bm = BenchmarkTools.Trial(params, times, evaluated.gctimes, geom_shifted_mean(memory), evaluated.allocs)
+
+    return bm
 end;
