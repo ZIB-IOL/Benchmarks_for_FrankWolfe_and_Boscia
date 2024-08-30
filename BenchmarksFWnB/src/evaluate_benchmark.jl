@@ -1,3 +1,4 @@
+
 """
 Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark. 
 
@@ -8,6 +9,8 @@ Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark.
                                                         "BCG"
                                                         "Lazy"
                                                         "PCG"
+                                                        "DICG"
+                                                        "BDICG"
                                                         Frank-Wolfe function
 
 - 'problem': LMO over which to optimize. Choose from:   "Simplex"
@@ -19,15 +22,12 @@ Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark.
                                                             
 - 'build_args::Vector{Tuple{Symbol, Any}}': Vector used to build args, e.g. [(:n, 100), (:rhs, 100_000)]
 - 'seed': random seed used for StableRNG
-- 'fw_kwargs': keyword arguments for FrankWolfe algorithm, e.g. [(:epsilon, 1e-7), (:max_iteration, 5000)]
-- 'seconds': time limit for benchmark run
-- 'evals': number of function evaluations per sample
-- 'samples': number of samples to take for benchmark
+- 'fw_kwargs': keyword arguments for FrankWolfe algorithm, e.g. [(:epsilon, 1e-7), (:max_iteration, 20_000)]
 - 'time_tolerance': percent tolerance for measured time
 - 'memory_tolerance': percent tolerance for measured memory usage
 
-    # Returns 
-    - 'bm': evaluated benchmark run
+# Returns 
+- 'bm': evaluated benchmark run
 """
 function benchmark_FW(  ; 
                         fw="Vanilla", 
@@ -35,9 +35,6 @@ function benchmark_FW(  ;
                         build_args=[],
                         seed=1234, 
                         fw_kwargs=[],
-                        seconds=3600,
-                        evals=5,
-                        samples=10000,
                         time_tolerance=0.05,
                         memory_tolerance=0.01,
                      )
@@ -65,9 +62,6 @@ function benchmark_FW(  ;
     bm = run_benchmark( fw, 
                         fw_args, 
                         kwargs=fw_kwargs, 
-                        seconds=seconds,
-                        evals=evals,
-                        samples=samples,
                         time_tolerance=time_tolerance,
                         memory_tolerance=memory_tolerance,
                         )
@@ -91,12 +85,10 @@ Sets up benchmark for Boscia, evaluates the run and returns the benchmark.
                                                                     "Poisson"
                                                                     "Portfolio"
                                                                     "Lasso"
+
     - 'build_args': arguments for lmo and objective that can be passed by unpacking
     - 'seed': random seed used for StableRNG
     - 'boscia_kwargs': keyword arguments for Boscia, e.g. [(:fw_epsilon, 1e-7), (:verbose, true)]
-    - 'seconds': time limit for benchmark run
-    - 'evals': number of function evaluations per sample
-    - 'samples': number of samples to take for benchmark
     - 'time_tolerance': percent tolerance for measured time
     - 'memory_tolerance': percent tolerance for measured memory usage
 
@@ -109,9 +101,6 @@ function benchmark_Boscia(  ;
                             build_args=[],
                             seed=1234,
                             boscia_kwargs=[],
-                            seconds=3600,
-                            evals=5,
-                            samples=10000,
                             time_tolerance=0.05,
                             memory_tolerance=0.01,
                             )
@@ -144,9 +133,6 @@ function benchmark_Boscia(  ;
     bm = run_benchmark( Boscia.solve, 
                         boscia_args, 
                         kwargs=boscia_kwargs,
-                        seconds=seconds,
-                        evals=evals,
-                        samples=samples,
                         time_tolerance=time_tolerance,
                         memory_tolerance=memory_tolerance,
                         )
@@ -161,9 +147,6 @@ Builds and runs the benchmark for a given function and args.
     - 'func': function to benchmark
     - 'args': arguments for 'func'
     - 'kwargs': keyword arguments to be used in 'func'
-    - 'seconds': time limit for benchmark run
-    - 'evals': number of evaluations per sample
-    - 'samples: number of samples to take for benchmark
     - 'time_tolerance': percent tolerance on measured time
     - 'memory_tolerance': percent tolerance on memory consumption
 
@@ -173,9 +156,6 @@ Builds and runs the benchmark for a given function and args.
 function run_benchmark( func, 
                         args; 
                         kwargs=[], 
-                        seconds=3600, 
-                        evals=5, 
-                        samples=1000, 
                         time_tolerance=0.05, 
                         memory_tolerance=0.01,
                         )
@@ -212,14 +192,17 @@ function run_benchmark( func,
         if dual_gap < 1e-7
             # memory in GB, only if the run was successful (< 1000 seconds minutes)
             push!(memory, evalauted.memory / 1e9)
+        else
+            # using 0 as a placeholder
+            push!(memory, 0)
         end
     end
 
-    params = evalauted.params
+    params = evaluated.params
     params.samples = 10
     params.evals=1
     params.seconds=3600
-    bm = BenchmarkTools.Trial(params, times, evaluated.gctimes, geom_shifted_mean(memory), evaluated.allocs)
+    bm = BenchmarkTools.Trial(params, times, evaluated.gctimes, memory[1], evaluated.allocs)
 
-    return bm
+    return bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory
 end;
