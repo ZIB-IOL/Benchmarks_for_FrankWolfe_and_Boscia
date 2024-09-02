@@ -70,14 +70,7 @@ function run_all_FW(; branch="new")
                     "BPCG",
                   ]
 
-    objectives  = [ "MSE",
-                    "Birkhoff",
-                    "Nuclear",
-                    "Sparse",
-                    "Spectrahedron",
-                  ]
-
-    lmos        = [ "Simplex",
+    problems    = [ "Simplex",
                     "Birkhoff",
                     "Nuclear",
                     "Sparse",
@@ -107,15 +100,13 @@ function run_all_FW(; branch="new")
 
     isdir(branch_path) || mkpath(branch_path)
     
-    for obj_lmo_idx in eachindex(objectives)
-        objective   = objectives[obj_lmo_idx]
-        lmo         = lmos[obj_lmo_idx]
+    for problem in problems
         for variant in fw_variants
-            @show variant, objective, lmo
-            setups = load("src/FrankWolfe/setups_FW.jld2", objective * "_" * lmo)
+            @show variant, problem
+            setups = load("src/FrankWolfe/setups_FW.jld2", problem)
             for setup_idx in eachindex(setups)
                 # schedules one job per setup
-                run(`sbatch sbatch_frank_wolfe.sh $variant $objective $lmo $setup_idx $branch_path`)
+                run(`sbatch sbatch_frank_wolfe.sh $variant $problem $setup_idx $branch_path`)
             end
         end
     end

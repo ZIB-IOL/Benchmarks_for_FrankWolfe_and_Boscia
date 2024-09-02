@@ -170,8 +170,12 @@ function run_benchmark( func,
     lmo_counts      = Vector{Int64}([])
     grad_counts     = Vector{Int64}([])
     dual_gaps       = Vector{Float64}([])
-    memory          = Vector{Float64}([])
+    memory          = Vector{Int64}([])
     times           = Vector{Float64}([])
+
+    # needed for building trial
+    gctimes         = Vector{Float64}([])
+    allocs          = Vector{Int64}([])
 
     for _ in 1:10
         track_lmo.counter = 0
@@ -179,30 +183,29 @@ function run_benchmark( func,
         track_f.counter = 0
         v = copy(x0)
         global evaluated = @benchmark begin 
-            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, $v; max_iteration=Inf, timeout=1_000, $kwargs...) 
+            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, $v; max_iteration=Inf, timeout=1_000, epsilon=1e-7, $kwargs...) 
         end samples=1 evals=1 seconds=3600 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
 
         # Tracking is done once each for eval run and taken sample, so need to half
         push!(obj_counts, Int(track_f.counter / 2))
         push!(lmo_counts, Int(track_lmo.counter / 2))
         push!(grad_counts, Int(track_grad!.counter / 2))
-        push!(dual_gaps, dual_gap)
-        # save time in seconds
-        push!(times, evaluated.times[1] / 1e9)
-        if dual_gap < 1e-7
-            # memory in GB, only if the run was successful (< 1000 seconds minutes)
-            push!(memory, evalauted.memory / 1e9)
-        else
-            # using 0 as a placeholder
-            push!(memory, 0)
-        end
+        push!(dual_gaps, Float64(dual_gap))
+        
+        push!(times, Float64(evaluated.times[1])) 
+        push!(gctimes, Float64(evaluated.gctimes[1]))
+
+        push!(memory, evaluated.memory)
+        push!(allocs, evaluated.allocs)
     end
 
     params = evaluated.params
     params.samples = 10
     params.evals=1
     params.seconds=3600
-    bm = BenchmarkTools.Trial(params, times, evaluated.gctimes, memory[1], evaluated.allocs)
+    mem_idx = findfirst(x -> x > 0, memory)
 
-    return bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory
+    bm = BenchmarkTools.Trial(params, times, gctimes, memory[mem_idx], maximum(allocs))
+
+    return bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory ./ 1e9, times ./ 1e9
 end;

@@ -14,7 +14,7 @@ Builds spectrahedron objective and LMO
 
 Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/examples/docs_6_spectrahedron.jl#L2 
 """
-function build_spectrahedron(; entries=1000, range=1500, seed=1234)
+function build_spectrahedron(; entries=1000, range=1500, radius=1.0, seed=1234)
     rng = StableRNG(seed)
     
     n = range

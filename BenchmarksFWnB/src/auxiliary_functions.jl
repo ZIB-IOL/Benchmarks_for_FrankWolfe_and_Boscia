@@ -36,7 +36,7 @@ function save_geomean(bm, filepath)
     # save geometric mean shifted by 1 second (1e9 ns)
     geomean_time = geom_shifted_mean(bm.times, shift=big"1e9")
     geomean_gc_time = geom_shifted_mean(bm.gctimes, shift=big"1e9")
-    trial_estimate = BenchmarkTools.TrialEstimate(bm.parameters, geomean_time, geomean_gc_time, bm.memory, bm.allocs)
+    trial_estimate = BenchmarkTools.TrialEstimate(bm.params, geomean_time, geomean_gc_time, bm.memory, bm.allocs)
     BenchmarkTools.save(filepath, trial_estimate)
 end
 
@@ -69,46 +69,41 @@ end
 """
 Given an objective and LMO pair, reads out and returns a vector of setups for this problem.
 """
-function read_setup_FW(; objective="MSE", lmo="Simplex")
-    objectives = ["MSE", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron"]
-    lmos = ["Simplex", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron"]
-    if objective in objectives
-        if lmo in lmos
-            try
-                path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
-                setups = JLD2.load(path, objective * "_" * lmo)
-                return setups
-            catch 
-                error("Invalid objective + LMO combination. No setup for $objective $lmo available.")
-            end
-        else
-            error("Invalid LMO, no setup for $lmo available.")
+function read_setup_FW(; problem="Simplex")
+    problems = ["Simplex", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron"]
+    if problem in problems
+        try
+            path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
+            setups = JLD2.load(path, problem)
+            return setups
+        catch 
+            error("Invalid problem. No setup for $problem available.")
         end
     else
-        error("Invalid objective, no setup $objective available.")
+        error("Invalid problem, no setup for $problem available.")
     end
 end
 
 
 """
-For a given 'problem', adds 'setup' to the vector containing all setups used in benchmark runs.
+For a given Frank-Wolfe 'problem', adds 'setup' to the vector containing all setups used in benchmark runs.
 """
-function add_setup(problem, setup)
-    if contains(problem, '_')
-        # FrankWolfe
-        path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
-        setups_dict = load(path)
-        append!(setups_dict[problem], [setup])
-        save(path, setups_dict)
-    else
-        # Boscia
-        path = joinpath(@__DIR__, "Boscia/setups_Boscia.jld2")
-        setups_dict = load(path)
-        append!(setups_dict[problem], [setup])
-        save(path, setups_dict)
-    end
+function add_setup_FW(problem, setup)
+    path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")
+    setups_dict = load(path)
+    append!(setups_dict[problem], [setup])
+    save(path, setups_dict)
 end
 
+"""
+For a given Boscia 'problem', adds 'setup' to the vector containing all setups used in benchmark runs.
+"""
+function add_setup_Boscia(problem, setup)
+    path = joinpath(@__DIR__, "Boscia/setups_Boscia.jld2")
+    setups_dict = load(path)
+    append!(setups_dict[problem], [setup])
+    save(path, setups_dict)
+end
 
 """
 Resets the setup vector for a given problem. If "all" is passed for problem, resets all problem setups.
@@ -131,7 +126,9 @@ function reset_setups(; package="FrankWolfe", problem="MSE_Simplex")
             end
             save(setups_path, setups)
         end
-    else  # Boscia  
+
+    else  
+        # Boscia  
         setups_path = joinpath(@__DIR__, "Boscia/setups_Boscia.jld2")
         setups = load(setups_path)
         if problem === "all"

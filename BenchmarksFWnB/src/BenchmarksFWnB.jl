@@ -55,7 +55,7 @@ include("auxiliary_functions.jl")
 export benchmark_FW, benchmark_Boscia
 
 export run_benchmark, compare_benchmarks, save_benchmark, save_geomean
-export read_setup_Boscia, read_setup_FW, add_setup, reset_setups
+export read_setup_Boscia, read_setup_FW, add_setup_FW, add_setup_Boscia, reset_setups
 
 end # module BenchmarksFWnB
 

@@ -1,6 +1,7 @@
 using BenchmarksFWnB
 using Printf
 using CSV
+using DataFrames
 
 # read out parameters from slurm
 fw_variant = ARGS[1]
@@ -9,9 +10,9 @@ setup_idx = ARGS[3]
 branch_path = ARGS[4]
 
 # run the benchmark
-setup = read_setup_FW(objective="Birkhoff", lmo="Birkhoff")[parse(Int64, setup_idx)]
+setup = read_setup_FW(problem=problem)[parse(Int64, setup_idx)]
 try
-    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory = benchmark_FW(; fw=fw_variant, problem=problem, build_args=[(:n, 10)])
+    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, setup...)
     global filename = fw_variant * "_" * problem * "_" * setup_idx * "_"
 catch e 
     file = "frank_wolfe_benchmark_" * fw_variant * "_" * problem    
@@ -47,8 +48,8 @@ for mode in ["maximum", "mean", "median", "minimum"]
 end
 
 # save misc values
-header = [:dual_gaps, :LMO_calls, :grad_calls, :obj_calls, :memory]
-values = hcat(dual_gaps, lmo_counts, grad_counts, obj_counts, memory)
+header = [:dual_gaps, :LMO_calls, :grad_calls, :obj_calls, :memory, :times]
+values = hcat(dual_gaps, lmo_counts, grad_counts, obj_counts, memory, times)
 df = DataFrame(values, :auto)
 rename!(df, header)
 f = open(joinpath(branch_path, filename * "values.csv"), "a")
