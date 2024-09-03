@@ -46,16 +46,20 @@ function benchmark_FW(  ;
         "PCG"           => FrankWolfe.pairwise_frank_wolfe
         "Lazy"          => lazified_conditional_gradient
         "DICG"          => FrankWolfe.decomposition_invariant_conditional_gradient
+        "BDICG"         => FrankWolfe.blended_decomposition_invariant_conditional_gradient
         _               => fw
     end
 
     # lmo 
     fw_args = @match problem begin
-        "Simplex"       => build_simplex(; build_args..., seed=seed)
-        "Birkhoff"      => build_birkhoff_fw(; build_args..., seed=seed)
+        "Simplex"       => build_simplex(; build_args...)
+        "Birkhoff"      => build_birkhoff_fw(; build_args...)
         "Spectrahedron" => build_spectrahedron(; build_args...)
         "Sparse"        => build_sparse(; build_args...)
         "Nuclear"       => build_nuclear(; build_args...)
+        "A-Criterion"   => build_a_opt(; build_args...)
+        "D-Criterion"   => build_d_opt(; build_args...)
+        "Poisson"       => build_poisson_fw(; build_args...)
         _               => problem
     end
 
