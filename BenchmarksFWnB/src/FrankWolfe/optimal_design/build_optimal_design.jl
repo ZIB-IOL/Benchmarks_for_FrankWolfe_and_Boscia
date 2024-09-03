@@ -1,24 +1,15 @@
-## Benchmark example
-using FrankWolfe 
-using Random
-using Distributions
-using LinearAlgebra
-using Statistics
-
-seed = 1
-m = 1000
 """
     build_data
 
-seed - for the Random functions.
+seed - for the Random Number Generator.
 m    - number of experiments.
 """
 function build_data(seed, m)
     # set up
-    Random.seed!(seed)
+    rng = StableRNG(seed)
 
     n = Int(floor(m/10))
-    B = rand(m,n)
+    B = rand(rng, m,n)
     B = B'*B
     @assert isposdef(B)
     D = MvNormal(randn(n),B)
