@@ -14,7 +14,7 @@
 # force-stopped by the server. If you make the expected time too long, it will
 # take longer for the job to start. Here, we say the job will take 5 minutes.
 #              d-hh:mm:ss
-#SBATCH --time=1-12:00:00
+#SBATCH --time=0-12:00:00
 
 # Define the partition on which the job shall run. May be omitted.
 # How much memory you need.
@@ -31,7 +31,7 @@
 #SBATCH --mail-type=FAIL
 
 # You may not place any commands before the last SBATCH directive
-julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 $5 &> frank_wolfe_benchmark_$1_$2_$3_$4_$SLURM_JOB_ID.txt
+julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 &> Benchmark_output/frank_wolfe_benchmark_$1_$2_$3_$SLURM_JOB_ID.txt
 
 # Finish the script
 exit 0

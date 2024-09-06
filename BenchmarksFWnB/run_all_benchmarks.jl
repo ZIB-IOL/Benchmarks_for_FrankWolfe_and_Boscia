@@ -75,9 +75,12 @@ function run_all_FW(; branch="new")
                     "Nuclear",
                     "Sparse",
                     "Spectrahedron",
+                    "A-Criterion",
+                    "D-Criterion",
+                    "Poisson",
                   ] 
 
-    # update package version to branch version
+    update package version to branch version
     try 
         Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
     catch e

@@ -70,7 +70,7 @@ end
 Given an objective and LMO pair, reads out and returns a vector of setups for this problem.
 """
 function read_setup_FW(; problem="Simplex")
-    problems = ["Simplex", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron"]
+    problems = ["Simplex", "Birkhoff", "Nuclear", "Sparse", "Spectrahedron", "A-Criterion", "D-Criterion", "Poisson"]
     if problem in problems
         try
             path = joinpath(@__DIR__, "FrankWolfe/setups_FW.jld2")

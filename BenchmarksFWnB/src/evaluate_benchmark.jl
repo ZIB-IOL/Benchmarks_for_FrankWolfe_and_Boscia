@@ -18,6 +18,9 @@ Sets up benchmark for FrankWolfe, evaluates the run and returns the benchmark.
                                                         "Spectrahedron"
                                                         "Birkhoff"
                                                         "Sparse"
+                                                        "A-Criterion"
+                                                        "D-Criterion"
+                                                        "Poisson"
                                                         (f, grad!, lmo, x0) tuple for custom lmo and starting point
                                                             
 - 'build_args::Vector{Tuple{Symbol, Any}}': Vector used to build args, e.g. [(:n, 100), (:rhs, 100_000)]
@@ -145,7 +148,7 @@ end;
 
 
 """
-Builds and runs the benchmark for a given function and args.
+Runs the benchmark for a given function and args.
 
     # Arguments
     - 'func': function to benchmark
@@ -155,7 +158,13 @@ Builds and runs the benchmark for a given function and args.
     - 'memory_tolerance': percent tolerance on memory consumption
 
     # Returns
-    'evalauted': evaluated benchmark run
+    - 'bm': evaluated benchmark run
+    - 'obj_counts': vector with objective call counters
+    - 'grad_counts': vector with gradient call counters
+    - 'lmo_counts': vector with LMO call counters
+    - 'dual_gaps': vector with FrankWolfe dual gaps 
+    - 'memory': vector with memory in GB
+    - 'times': vector with times in seconds
 """
 function run_benchmark( func, 
                         args; 
@@ -181,19 +190,19 @@ function run_benchmark( func,
     gctimes         = Vector{Float64}([])
     allocs          = Vector{Int64}([])
 
-    for _ in 1:10
+    for _ in 1:3
         track_lmo.counter = 0
         track_grad!.counter = 0
         track_f.counter = 0
         v = copy(x0)
         global evaluated = @benchmark begin 
-            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, $v; max_iteration=Inf, timeout=1_000, epsilon=1e-7, $kwargs...) 
+            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, $v; max_iteration=Inf, timeout=900, epsilon=1e-7, $kwargs...) 
         end samples=1 evals=1 seconds=3600 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
 
         # Tracking is done once each for eval run and taken sample, so need to half
-        push!(obj_counts, Int(track_f.counter / 2))
-        push!(lmo_counts, Int(track_lmo.counter / 2))
-        push!(grad_counts, Int(track_grad!.counter / 2))
+        push!(obj_counts, Int(round(track_f.counter / 2)))
+        push!(lmo_counts, Int(round(track_lmo.counter / 2)))
+        push!(grad_counts, Int(round(track_grad!.counter / 2)))
         push!(dual_gaps, Float64(dual_gap))
         
         push!(times, Float64(evaluated.times[1])) 
@@ -207,7 +216,7 @@ function run_benchmark( func,
     params.samples = 10
     params.evals=1
     params.seconds=3600
-    mem_idx = findfirst(x -> x > 0, memory)
+    mem_idx = findfirst(x -> x < 900, times ./ 1e9)
 
     bm = BenchmarkTools.Trial(params, times, gctimes, memory[mem_idx], maximum(allocs))
 

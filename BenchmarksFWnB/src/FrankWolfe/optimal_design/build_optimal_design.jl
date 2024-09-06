@@ -60,15 +60,15 @@ function build_start_point(A)
     m, n = size(A)
     S = linearly_independent_rows(A)
     @assert length(S) == n
-    V = Vector{Float64}[]
+    V = FrankWolfe.ScaledHotVector{Float64}[]
 
     for i in S
-        v = zeros(m)
-        v[i] = 1.0
+        v = FrankWolfe.ScaledHotVector(1.0, i, m)
         push!(V, v)
     end
 
     x = sum(V .* 1/n)
+    x = convert(SparseArrays.SparseVector, x)
     active_set= FrankWolfe.ActiveSet(fill(1/n, n), V, x)
 
     return x, active_set, S
@@ -131,16 +131,6 @@ function build_a_criterion(A; μ=0.0, build_safe=true)
     return f_a, grad_a!
 end
 
-
-# A = build_data(seed, m)
-# f, grad! = build_a_criterion(A)
-# lmo = FrankWolfe.ProbabilitySimplexOracle(1.0)
-# x0, active_set = build_start_point(A)
-
-# x, _, primal, dual_gap, _ = FrankWolfe.frank_wolfe(f, grad!, lmo, x0, verbose=true)
-# x, _, primal, dual_gap, _, _ = FrankWolfe.blended_pairwise_conditional_gradient(f, grad!, lmo, active_set, verbose=true)
-
-
 # D Optimal
 """
 Build function for the D-criterion.
@@ -202,8 +192,26 @@ Returns FW args for D-Criterion
 """
 function build_d_opt(; n=100, seed=1234)
     A = build_data(seed, n)
-    f, grad!, build_d_criterion(A)
-    lmo = FrankWolfe.ProbabilitySimplexOracle(1.0)
+    f, grad! = build_d_criterion(A)
+    
+    # define Probability Simplex via MOI, because DICG throws an error otherwise
+    o = SCIP.Optimizer()
+    MOI.empty!(o)
+    MOI.set(o, MOI.Silent(), true)
+
+    X = MOI.add_variables(o, n)
+
+    s = 0.0
+    for x in X 
+        s += x 
+        # each var has to be non-negative
+        MOI.add_constraint(o, x, MOI.GreaterThan(0.0))
+    end
+
+    # sum of all variables has to be less than 1.0
+    MOI.add_constraint(o, s, MOI.LessThan(1.0))
+
+    lmo = FrankWolfe.MathOptLMO(o)
     x0, _ = build_start_point(A)
 
     return f, grad!, lmo, x0
@@ -215,7 +223,25 @@ Returns FW args for A-Criterion
 function build_a_opt(; n=100, seed=1234)
     A = build_data(seed, n)
     f, grad! = build_a_criterion(A)
-    lmo = FrankWolfe.ProbabilitySimplexOracle(1.0)
+
+    # define Probability Simplex via MOI, because DICG throws an error otherwise
+    o = SCIP.Optimizer()
+    MOI.empty!(o)
+    MOI.set(o, MOI.Silent(), true)
+
+    X = MOI.add_variables(o, n)
+
+    s = 0.0
+    for x in X 
+        s += x 
+        # each var has to be non-negative
+        MOI.add_constraint(o, x, MOI.GreaterThan(0.0))
+    end
+
+    # sum of all variables has to be less than 1.0
+    MOI.add_constraint(o, s, MOI.LessThan(1.0))
+
+    lmo = FrankWolfe.MathOptLMO(o)
     x0, _ = build_start_point(A)
 
     return f, grad!, lmo, x0

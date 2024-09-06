@@ -11,6 +11,7 @@ branch_path = ARGS[4]
 
 # run the benchmark
 setup = read_setup_FW(problem=problem)[parse(Int64, setup_idx)]
+
 try
     global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, setup...)
     global filename = fw_variant * "_" * problem * "_" * setup_idx * "_"
