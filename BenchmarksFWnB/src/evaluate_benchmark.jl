@@ -55,14 +55,14 @@ function benchmark_FW(  ;
 
     # lmo 
     fw_args = @match problem begin
-        "Simplex"       => build_simplex(; build_args...)
-        "Birkhoff"      => build_birkhoff_fw(; build_args...)
-        "Spectrahedron" => build_spectrahedron(; build_args...)
-        "Sparse"        => build_sparse(; build_args...)
-        "Nuclear"       => build_nuclear(; build_args...)
-        "A-Criterion"   => build_a_opt(; build_args...)
-        "D-Criterion"   => build_d_opt(; build_args...)
-        "Poisson"       => build_poisson_fw(; build_args...)
+        "Simplex"       => build_simplex(; seed=seed, build_args...)
+        "Birkhoff"      => build_birkhoff_fw(; seed=seed, build_args...)
+        "Spectrahedron" => build_spectrahedron(; seed=seed, build_args...)
+        "Sparse"        => build_sparse(; seed=seed, build_args...)
+        "Nuclear"       => build_nuclear(; seed=seed, build_args...)
+        "A-Criterion"   => build_a_opt(; seed=seed, build_args...)
+        "D-Criterion"   => build_d_opt(; seed=seed, build_args...)
+        "Poisson"       => build_poisson_fw(; seed=seed, build_args...)
         _               => problem
     end
 
@@ -190,13 +190,12 @@ function run_benchmark( func,
     gctimes         = Vector{Float64}([])
     allocs          = Vector{Int64}([])
 
-    for _ in 1:3
+    for _ in 1:10
         track_lmo.counter = 0
         track_grad!.counter = 0
         track_f.counter = 0
-        v = copy(x0)
         global evaluated = @benchmark begin 
-            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, $v; max_iteration=Inf, timeout=900, epsilon=1e-7, $kwargs...) 
+            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, copy($x0); max_iteration=Inf, timeout=900, epsilon=1e-7, verbose=true, $kwargs...) 
         end samples=1 evals=1 seconds=3600 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
 
         # Tracking is done once each for eval run and taken sample, so need to half
@@ -216,9 +215,8 @@ function run_benchmark( func,
     params.samples = 10
     params.evals=1
     params.seconds=3600
-    mem_idx = findfirst(x -> x < 900, times ./ 1e9)
 
-    bm = BenchmarkTools.Trial(params, times, gctimes, memory[mem_idx], maximum(allocs))
+    bm = BenchmarkTools.Trial(params, times, gctimes, maximum(memory), maximum(allocs))
 
     return bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory ./ 1e9, times ./ 1e9
 end;

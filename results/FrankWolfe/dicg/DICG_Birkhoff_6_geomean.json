@@ -1,0 +1,1 @@
+[{"Julia":"1.10.5","BenchmarkTools":"1.5.0"},[["TrialEstimate",{"allocs":5109650015,"time":9.259390859439619e11,"memory":113273606024,"params":["Parameters",{"gctrial":true,"time_tolerance":0.05,"evals_set":false,"samples":10,"evals":1,"gcsample":false,"seconds":3600.0,"overhead":0.0,"memory_tolerance":0.01}],"gctime":1.1509648543282686e10}]]]

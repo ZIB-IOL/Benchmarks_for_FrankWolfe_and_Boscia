@@ -59,7 +59,7 @@ end
 
 
 """
-Runs each Frank-Wolfe variant on the pairs (objectives[i], lmos[i]) and saves the result to the desired branch. 
+Runs each Frank-Wolfe variant on each problem and saves the result to the desired branch. 
 """
 function run_all_FW(; branch="new")
     fw_variants = [ "Vanilla",
@@ -80,12 +80,12 @@ function run_all_FW(; branch="new")
                     "Poisson",
                   ] 
 
-    update package version to branch version
-    try 
-        Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
-    catch e
-        rethrow(e)
-    end
+    # # update package version to branch version
+    # try 
+    #     Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
+    # catch e
+    #     rethrow(e)
+    # end
     
     # determine which branch to write to.
     working_dir = @__DIR__
@@ -112,5 +112,6 @@ function run_all_FW(; branch="new")
                 run(`sbatch sbatch_frank_wolfe.sh $variant $problem $setup_idx $branch_path`)
             end
         end
+        
     end
 end

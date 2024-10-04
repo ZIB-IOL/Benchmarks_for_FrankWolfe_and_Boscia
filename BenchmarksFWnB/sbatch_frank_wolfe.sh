@@ -6,6 +6,7 @@
 # Define, how many nodes you need. Here, we ask for 1 node.
 # Each node has 16 or 20 CPU cores.
 #SBATCH --nodes=1
+#SBATCH --cpus-per-task=32
 # You can further define the number of tasks with --ntasks-per-*
 # See "man sbatch" for details. e.g. --ntasks=4 will ask for 4 cpus.
 
@@ -31,7 +32,7 @@
 #SBATCH --mail-type=FAIL
 
 # You may not place any commands before the last SBATCH directive
-julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 &> Benchmark_output/frank_wolfe_benchmark_$1_$2_$3_$SLURM_JOB_ID.txt
+julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 &> benchmark_output/frank_wolfe_benchmark_$1_$2_$3_$SLURM_JOB_ID.txt
 
 # Finish the script
 exit 0

@@ -43,8 +43,9 @@ for mode in ["maximum", "mean", "median", "minimum"]
     try
         save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
     catch e
-        println("Saving data failed.")
-        rethrow(e)
+        println("Saving data in mode $mode failed. Showing error.")
+        show(e)
+        continue
     end
 end
 
