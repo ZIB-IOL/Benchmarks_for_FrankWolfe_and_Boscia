@@ -1,7 +1,7 @@
 """
 Builds 1/m ||Ax + b||^2 objective and Simplex LMO with dimension n and given radius.
 """
-function build_simplex(; m=100, n=30, radius=1.0, seed=1234)
+function build_simplex(; m=100, n=30, radius=1.0, active=false, seed=1234)
     rng = StableRNG(seed)
     
     A = Random.randn(rng, m, n)
@@ -16,6 +16,11 @@ function build_simplex(; m=100, n=30, radius=1.0, seed=1234)
 
     lmo = FrankWolfe.ProbabilitySimplexOracle(radius)
     x0 = compute_extreme_point(lmo, zeros(Float64, n))
+
+    if active
+        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, copy(x0))], A' * A, A' * b)
+        return f, grad!, lmo, active_set
+    end
 
     return f, grad!, lmo, x0
 end;

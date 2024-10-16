@@ -1,7 +1,7 @@
 """
 Builds objective and LMO for the Birkhoff problem.
 """
-function build_birkhoff_fw(; n=10, seed=1234)
+function build_birkhoff_fw(; n=10, active=false, seed=1234)
     rng = StableRNG(seed)
         
     xpi = rand(rng, n*n)
@@ -17,6 +17,11 @@ function build_birkhoff_fw(; n=10, seed=1234)
 
     lmo = FrankWolfe.BirkhoffPolytopeLMO()
     x0 = compute_extreme_point(lmo, reshape(rand(rng, n*n), n, n))
+
+    if active
+        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], 1/n^2 * 2 * Matrix(I, n, n), -2/100 * xpi)
+        return f, grad!, lmo, active_set
+    end
 
     return f, grad!, lmo, x0
 end

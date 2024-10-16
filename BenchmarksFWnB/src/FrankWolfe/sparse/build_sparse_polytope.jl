@@ -30,5 +30,10 @@ function build_sparse(; n=100, K=40, rhs=1.0, seed=1234)
     lmo = FrankWolfe.KSparseLMO(K, rhs)
     x0 = compute_extreme_point(lmo, zeros(n))
 
+    if active
+        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], 2*Matrix(I, n, n), -2*xp)
+        return f, grad!, lmo, active_set
+    end
+
     return f, grad!, lmo, x0
 end

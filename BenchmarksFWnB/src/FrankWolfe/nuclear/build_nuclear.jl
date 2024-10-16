@@ -3,7 +3,7 @@
 Builds NuclearNormLMO with upper bound 'rhs', and Nuclear objective (collaborative filtering) 
 with a random matrix of dimension n^2 and rank k.
 """
-function build_nuclear(; n=50, k=10, rhs=275_000, seed=1234)
+function build_nuclear(; n=50, k=10, rhs=275_000, active=false, seed=1234)
     rng = StableRNG(seed)
 
     # dimension
@@ -43,6 +43,10 @@ function build_nuclear(; n=50, k=10, rhs=275_000, seed=1234)
 
     lmo = FrankWolfe.NuclearNormLMO(rhs)
     x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
+    
+    # if active
+    #     active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], )
+    # end
 
     return f, grad!, lmo, x0
 end;
