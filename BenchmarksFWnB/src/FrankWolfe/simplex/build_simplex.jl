@@ -17,8 +17,8 @@ function build_simplex(; m=100, n=30, radius=1.0, active=false, seed=1234)
     lmo = FrankWolfe.ProbabilitySimplexOracle(radius)
     x0 = compute_extreme_point(lmo, zeros(Float64, n))
 
-    if active
-        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, copy(x0))], A' * A, A' * b)
+    if convert(Bool, active) == true
+        active_set = FrankWolfe.ActiveSetQuadratic([(BigFloat(1.0), copy(x0))], A' * A, A' * b)
         return f, grad!, lmo, active_set
     end
 
