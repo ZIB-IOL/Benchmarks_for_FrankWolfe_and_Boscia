@@ -44,9 +44,18 @@ function build_nuclear(; n=50, k=10, rhs=275_000, active=false, seed=1234)
     lmo = FrankWolfe.NuclearNormLMO(rhs)
     x0 = compute_extreme_point(lmo, zeros(Float64, n, n))
     
-    # if active
-    #     active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], )
-    # end
+    if convert(Bool, active) == true
+        present_mat = zeros(n, n)
+        present_b = zeros(n, n)
+        for (i, j) in present_entries
+            if i == j 
+                present_mat[i, j] = 1
+            end
+            present_b[i, j] = -Xreal[i, j]
+        end
+        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], present_mat, present_b)
+        return f, grad!, lmo, active_set
+    end
 
     return f, grad!, lmo, x0
 end;

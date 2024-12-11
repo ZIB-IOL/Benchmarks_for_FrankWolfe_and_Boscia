@@ -195,8 +195,8 @@ function run_benchmark( func,
         track_grad!.counter = 0
         track_f.counter = 0
         global evaluated = @benchmark begin 
-            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, copy($x0); max_iteration=Inf, timeout=900, epsilon=1e-7, verbose=true, $kwargs...) 
-        end samples=1 evals=1 seconds=3600 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
+            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, copy($x0); max_iteration=Inf, timeout=3600, epsilon=1e-7, verbose=true, $kwargs...) 
+        end samples=1 evals=1 seconds=4000 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
 
         # Tracking is done once each for eval run and taken sample, so need to half. Rounding for runs that timeout, since they may slightly differ in LMO calls
         push!(obj_counts, Int(round(track_f.counter / 2)))

@@ -6,7 +6,7 @@
 # Define, how many nodes you need. Here, we ask for 1 node.
 # Each node has 16 or 20 CPU cores.
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=32
 #SBATCH --mem=256G
 # You can further define the number of tasks with --ntasks-per-*
 # See "man sbatch" for details. e.g. --ntasks=4 will ask for 4 cpus.
@@ -24,16 +24,16 @@
 ## We want to run on htc-cmp[101-148], exlude all others
 #SBATCH --exclude=htc-cmp[001-008,014-022,024-025,501-532]
 
-# This is overwritten by the line after '>' in the executed line. CHANGE THE OUTPUT FILENAME THERE, NOT HERE!
-#SBATCH --output=/home/htc/dkuzinow/SCRATCH/FrankWolfe_Bench/frank_wolfe_benchmark_%j.log
+# ATTENTION! CHANGE THIS LINE TO YOUR OWN USERNAME AND FOLDER
+#SBATCH --output=/home/htc/dkuzinow/SCRATCH/FrankWolfe_Bench/frank_wolfe_benchmark_Lazy%j.log
 
 # Turn on mail notification. There are many possible self-explaining values:
 # NONE, BEGIN, END, FAIL, ALL (including all aforementioned)
 # For more values, check "man sbatch"
 #SBATCH --mail-type=FAIL
 
-# You may not place any commands before the last SBATCH directive.              CHANGE OUTPUT PATH AND NAME HERE!
-julia --project run_frank_wolfe_benchmark.jl $1 $2 $3 $4 $5 > /home/htc/dkuzinow/research_projects/Benchmarks_for_FrankWolfe_and_Boscia/BenchmarksFWnB/benchmark_output/frank_wolfe_benchmark_$1_$2_$3_$4.log
+# You may not place any commands before the last SBATCH directive
+srun julia --project run_lazy_variants.jl $1 $2 $3 $4
 
 # Finish the script
 exit 0

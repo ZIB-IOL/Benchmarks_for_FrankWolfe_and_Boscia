@@ -71,14 +71,21 @@ function run_all_FW(; branch="new")
                   ]
 
     problems    = [ "Simplex",
-                    "Birkhoff",
-                    "Nuclear",
-                    "Sparse",
-                    "Spectrahedron",
-                    "A-Criterion",
-                    "D-Criterion",
-                    "Poisson",
+                    "Birkhoff", 
+                    "Nuclear",  
+                    "Sparse",     
+                    "Spectrahedron", 
+                    "A-Criterion",  
+                    "D-Criterion",  
+                    "Poisson",   
                   ] 
+    
+    seeds       = [ 6237259982982784263,
+                    4029983743574629836,
+                    8775360557774874450,
+                    3837242124960531782,
+                    2604058079039351027,
+                  ]
 
     # # update package version to branch version
     # try 
@@ -106,12 +113,13 @@ function run_all_FW(; branch="new")
     for problem in problems
         for variant in fw_variants
             @show variant, problem
-            setups = load("src/FrankWolfe/setups_FW.jld2", problem)
+            setups = load(joinpath(working_dir, "src/FrankWolfe/setups_FW.jld2"), problem)
             for setup_idx in eachindex(setups)
-                # schedules one job per setup
-                run(`sbatch sbatch_frank_wolfe.sh $variant $problem $setup_idx $branch_path`)
+                for seed in seeds
+                    # schedules one job per setup
+                    run(`sbatch sbatch_frank_wolfe.sh $variant $problem $setup_idx $seed $branch_path`)
+                end
             end
         end
-        
     end
 end

@@ -4,7 +4,8 @@ using BenchmarksFWnB
 problem = ARGS[1]
 fw_variant = ARGS[2]
 setup_idx = ARGS[3]
-branch_path = ARGS[4]
+seed = ARGS[4]
+branch_path = ARGS[5]
 
 # run the benchmark
 setup = read_setup_Boscia(problem=problem)[parse(Int64, setup_idx)]
@@ -16,7 +17,7 @@ end
 
 try
     global bm = benchmark_Boscia(; fw=fw_variant, problem=problem, setup...)
-    global filename = problem * "_" * fw_variant * "_" * setup_idx * "_"
+    global filename = problem * "_" * fw_variant * "_" * setup_idx * "_" * seed * "_"
 catch e 
     println(e)
     file = "boscia_benchmark_" * problem * "_" * fw_variant    

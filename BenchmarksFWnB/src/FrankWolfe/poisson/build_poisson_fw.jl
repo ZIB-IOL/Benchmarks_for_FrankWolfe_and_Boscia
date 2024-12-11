@@ -79,5 +79,5 @@ function build_poisson_fw(; n=20, seed=1234)
         return storage
     end
 
-    return f, grad!, lmo, x0
+    return f, grad!, lmo, convert(SparseArrays.SparseVector, x0)
 end

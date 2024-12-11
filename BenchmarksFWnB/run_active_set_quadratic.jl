@@ -7,15 +7,14 @@ using DataFrames
 fw_variant = ARGS[1]
 problem = ARGS[2]
 setup_idx = ARGS[3]
-seed = ARGS[4]
-branch_path = ARGS[5]
+branch_path = ARGS[4]
 
 # run the benchmark
 setup = read_setup_FW(problem=problem)[parse(Int64, setup_idx)]
 
 try
-    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, setup..., seed=parse(Int64, seed))
-    global filename = fw_variant * "_" * problem * "_" * setup_idx * "_" * seed * "_"
+    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, fw_kwargs=[(:renorm_interval, 1)], setup...)
+    global filename = fw_variant * "_" * "ActiveSetQuadratic" * "_" * problem * "_" * setup_idx * "_" * seed * "_"
 catch e 
     file = "frank_wolfe_benchmark_" * fw_variant * "_" * problem    
     open(file * ".txt","a") do io
@@ -30,27 +29,27 @@ isdir(branch_path) || mkpath(branch_path)
 println("Benchmark run successful")
 println()
 
-println("Displaying results for $fw_variant Frank-Wolfe on $problem, setup $setup_idx, seed $seed")
+println("Displaying results for $fw_variant Frank-Wolfe on $problem, setup $setup_idx")
 println()
 display(bm)
 println()
 
 println("Saving results...")
 
-# # save results for different modes
-# save_geomean(bm, joinpath(branch_path, filename * "geomean" * ".json"))
+# save results for different modes
+save_geomean(bm, joinpath(branch_path, filename * "geomean" * ".json"))
 
-# for mode in ["maximum", "mean", "median", "minimum"]
-#     try
-#         save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
-#     catch e
-#         println("Saving data in mode $mode failed. Showing error.")
-#         show(e)
-#         continue
-#     end
-# end
+for mode in ["maximum", "mean", "median", "minimum"]
+    try
+        save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
+    catch e
+        println("Saving data in mode $mode failed. Showing error.")
+        show(e)
+        continue
+    end
+end
 
-# save misc values in csv file
+# save misc values
 header = [:dual_gaps, :LMO_calls, :grad_calls, :obj_calls, :memory, :times]
 values = hcat(dual_gaps, lmo_counts, grad_counts, obj_counts, memory, times)
 df = DataFrame(values, :auto)

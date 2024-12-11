@@ -12,9 +12,9 @@ function build_data(seed, m)
     B = rand(rng, m,n)
     B = B'*B
     @assert isposdef(B)
-    D = MvNormal(randn(n),B)
+    D = MvNormal(randn(rng, n),B)
     
-    A = rand(D, m)'
+    A = rand(rng, D, m)'
     @assert rank(A) == n 
         
     return A 
@@ -78,7 +78,7 @@ end
 """
 Build function for the A-criterion. 
 """
-function build_a_criterion(A; μ=0.0, build_safe=true)
+function build_a_criterion(A; μ=1e-4, build_safe=true)
     m, n = size(A) 
     a=m
     domain_oracle = build_domain_oracle(A, n)
@@ -135,7 +135,7 @@ end
 """
 Build function for the D-criterion.
 """
-function build_d_criterion(A; μ =0.0, build_safe=true)
+function build_d_criterion(A; μ=1e-4, build_safe=true)
     m, n = size(A)
     a=m
     domain_oracle = build_domain_oracle(A, n)
@@ -194,24 +194,7 @@ function build_d_opt(; n=100, seed=1234)
     A = build_data(seed, n)
     f, grad! = build_d_criterion(A)
     
-    # define Probability Simplex via MOI, because DICG throws an error otherwise
-    o = SCIP.Optimizer()
-    MOI.empty!(o)
-    MOI.set(o, MOI.Silent(), true)
-
-    X = MOI.add_variables(o, n)
-
-    s = 0.0
-    for x in X 
-        s += x 
-        # each var has to be non-negative
-        MOI.add_constraint(o, x, MOI.GreaterThan(0.0))
-    end
-
-    # sum of all variables has to be less than 1.0
-    MOI.add_constraint(o, s, MOI.LessThan(1.0))
-
-    lmo = FrankWolfe.MathOptLMO(o)
+    lmo = FrankWolfe.ProbabilitySimplexOracle(1.0)
     x0, _ = build_start_point(A)
 
     return f, grad!, lmo, x0
@@ -224,24 +207,7 @@ function build_a_opt(; n=100, seed=1234)
     A = build_data(seed, n)
     f, grad! = build_a_criterion(A)
 
-    # define Probability Simplex via MOI, because DICG throws an error otherwise
-    o = SCIP.Optimizer()
-    MOI.empty!(o)
-    MOI.set(o, MOI.Silent(), true)
-
-    X = MOI.add_variables(o, n)
-
-    s = 0.0
-    for x in X 
-        s += x 
-        # each var has to be non-negative
-        MOI.add_constraint(o, x, MOI.GreaterThan(0.0))
-    end
-
-    # sum of all variables has to be less than 1.0
-    MOI.add_constraint(o, s, MOI.LessThan(1.0))
-
-    lmo = FrankWolfe.MathOptLMO(o)
+    lmo = FrankWolfe.ProbabilitySimplexOracle(1.0)
     x0, _ = build_start_point(A)
 
     return f, grad!, lmo, x0

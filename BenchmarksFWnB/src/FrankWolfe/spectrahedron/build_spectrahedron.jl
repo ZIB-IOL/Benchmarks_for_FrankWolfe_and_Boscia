@@ -14,7 +14,7 @@ Builds spectrahedron objective and LMO
 
 Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/examples/docs_6_spectrahedron.jl#L2 
 """
-function build_spectrahedron(; entries=1000, range=1500, radius=1.0, seed=1234)
+function build_spectrahedron(; entries=1000, range=1500, radius=1.0, active=false, seed=1234)
     rng = StableRNG(seed)
     
     n = range
@@ -42,6 +42,19 @@ function build_spectrahedron(; entries=1000, range=1500, radius=1.0, seed=1234)
 
     lmo = FrankWolfe.SpectraplexLMO(radius, n, false)
     x0 = compute_extreme_point(lmo, spzeros(n, n))
+
+    if convert(Bool, active) == true
+        present_mat = zeros(n, n)
+        present_b = zeros(n, n)
+        for (idx, (i, j)) in enumerate(entry_indices)
+            if i == j 
+                present_mat[i, j] = 1
+            end
+            present_b[i, j] = -entry_values[idx]
+            present_b[j, i] = -entry_values[idx]
+        end
+        return f, grad!, lmo, FrankWolfe.ActiveSetQuadratic([(1.0, x0)], present_mat, present_b)
+    end
 
     return f, grad!, lmo, x0
 end
