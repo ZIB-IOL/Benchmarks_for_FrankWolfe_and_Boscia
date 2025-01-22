@@ -7,13 +7,14 @@ using DataFrames
 fw_variant = ARGS[1]
 problem = ARGS[2]
 setup_idx = ARGS[3]
-branch_path = ARGS[4]
+seed = ARGS[4]
+branch_path = ARGS[5]
 
 # run the benchmark
 setup = read_setup_FW(problem=problem)[parse(Int64, setup_idx)]
 
 try
-    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, fw_kwargs=[(:lazy, true)], setup...)
+    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, fw_kwargs=[(:lazy, true)], setup..., seed=parse(Int64, seed))
     global filename = "Lazy" * fw_variant * "_" * problem * "_" * setup_idx * "_" * seed * "_"
 catch e 
     file = "frank_wolfe_benchmark_Lazy" * fw_variant * "_" * problem    

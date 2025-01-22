@@ -87,12 +87,12 @@ function run_all_FW(; branch="new")
                     2604058079039351027,
                   ]
 
-    # # update package version to branch version
-    # try 
-    #     Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
-    # catch e
-    #     rethrow(e)
-    # end
+    # update package version to branch version
+    try 
+        Pkg.add(url="https://github.com/ZIB-IOL/FrankWolfe.jl", rev=branch)
+    catch e
+        rethrow(e)
+    end
     
     # determine which branch to write to.
     working_dir = @__DIR__

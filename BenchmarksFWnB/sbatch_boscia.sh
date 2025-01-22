@@ -20,7 +20,7 @@
 # How much memory you need.
 #SBATCH --partition=big  # Specify the desired partition, e.g. gpu, cpu or big (GPU is reserved for ML stuff)
 ## We want to run on htc-cmp[101-148], exlude all others
-#SBATCH --exclude=htc-cmp[001-008,024-025,501-532]
+#SBATCH --exclude=htc-cmp[001-008,011-013,014-022,023,024-025,501-532]
 
 # ATTENTION! CHANGE THIS LINE TO YOUR OWN USERNAME AND FOLDER
 #SBATCH --output=/home/htc/my_username/SCRATCH/my_output_folder/%j.log

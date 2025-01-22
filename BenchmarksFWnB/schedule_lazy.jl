@@ -8,18 +8,17 @@ function run_all_LazyFW(; branch="new")
                     "BCG",
                     "PCG",
                     "BPCG",
-                    # "DICG",  # not implemented correctly
-                    # "BDICG",
                   ]
 
-    problems    = [ "Simplex",
-                    "Birkhoff",
-                    "Nuclear",
-                    "Sparse",
-                    "Spectrahedron",
-                    "A-Criterion",
-                    "D-Criterion",
-                    "Poisson",
+    problems    = [ 
+                    "Simplex",  
+                    "Birkhoff", 
+                    "Nuclear", 
+                    "Sparse", 
+                    "Spectrahedron", 
+                    "A-Criterion", 
+                    "D-Criterion", 
+                    "Poisson",  
                   ]
 
     seeds       = [ 6237259982982784263,

@@ -8,9 +8,9 @@ function run_DICG_FW()
 
     problems    = [ "Simplex",
                     "Birkhoff",
-                    "A-Criterion",
+                    "A-Criterion",  
                     "D-Criterion",
-                    "Poisson",
+                    "Poisson", 	    
                     ]
 
     seeds       = [ 6237259982982784263,

@@ -19,7 +19,7 @@ function build_birkhoff_fw(; n=10, active=false, seed=1234)
     x0 = compute_extreme_point(lmo, reshape(rand(rng, n*n), n, n))
 
     if convert(Bool, active) == true
-        active_set = FrankWolfe.ActiveSetQuadratic([(BigFloat(1.0), x0)], LinearAlgebra.I, -2/(n^2) * xpi)
+        active_set = FrankWolfe.ActiveSetQuadraticProductCaching([(BigFloat(1.0), x0)], LinearAlgebra.I, -2/(n^2) * xpi)
         return f, grad!, lmo, active_set
     end
 

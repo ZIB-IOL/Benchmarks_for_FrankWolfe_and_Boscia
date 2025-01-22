@@ -22,7 +22,7 @@
 # How much memory you need.
 #SBATCH --partition=big  # Specify the desired partition, e.g. gpu, cpu or big (GPU is reserved for ML stuff)
 ## We want to run on htc-cmp[101-148], exlude all others
-#SBATCH --exclude=htc-cmp[001-008,014-022,024-025,501-532]
+#SBATCH --exclude=htc-cmp[001-008,011-013,014-022,023,024-025,501-532]
 
 # ATTENTION! CHANGE THIS LINE TO YOUR OWN USERNAME AND FOLDER
 #SBATCH --output=/home/htc/dkuzinow/SCRATCH/FrankWolfe_Bench/frank_wolfe_benchmark_Lazy%j.log
@@ -33,7 +33,7 @@
 #SBATCH --mail-type=FAIL
 
 # You may not place any commands before the last SBATCH directive
-srun julia --project run_lazy_variants.jl $1 $2 $3 $4
+srun julia --project run_lazy_variants.jl $1 $2 $3 $4 $5 > /home/htc/dkuzinow/research_projects/Benchmarks_for_FrankWolfe_and_Boscia/BenchmarksFWnB/benchmark_output/frank_wolfe_benchmark_Lazy$1_$2_$3_$4.log
 
 # Finish the script
 exit 0

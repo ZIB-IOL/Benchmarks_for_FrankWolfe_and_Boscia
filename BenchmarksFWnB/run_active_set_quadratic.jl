@@ -7,13 +7,16 @@ using DataFrames
 fw_variant = ARGS[1]
 problem = ARGS[2]
 setup_idx = ARGS[3]
-branch_path = ARGS[4]
+seed = ARGS[4]
+branch_path = ARGS[5]
 
 # run the benchmark
 setup = read_setup_FW(problem=problem)[parse(Int64, setup_idx)]
+setup = convert(Vector{Tuple{Symbol, Vector{Tuple{Symbol, Any}}}}, setup)
+append!(setup[1][2], [(:active, true)])
 
 try
-    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, fw_kwargs=[(:renorm_interval, 1)], setup...)
+    global bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = benchmark_FW(; fw=fw_variant, problem=problem, seed=parse(Int64, seed), setup...)
     global filename = fw_variant * "_" * "ActiveSetQuadratic" * "_" * problem * "_" * setup_idx * "_" * seed * "_"
 catch e 
     file = "frank_wolfe_benchmark_" * fw_variant * "_" * problem    
@@ -36,18 +39,18 @@ println()
 
 println("Saving results...")
 
-# save results for different modes
-save_geomean(bm, joinpath(branch_path, filename * "geomean" * ".json"))
+# # save results for different modes
+# save_geomean(bm, joinpath(branch_path, filename * "geomean" * ".json"))
 
-for mode in ["maximum", "mean", "median", "minimum"]
-    try
-        save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
-    catch e
-        println("Saving data in mode $mode failed. Showing error.")
-        show(e)
-        continue
-    end
-end
+# for mode in ["maximum", "mean", "median", "minimum"]
+#     try
+#         save_benchmark(bm; mode=mode, filepath=joinpath(branch_path, filename * mode * ".json"))
+#     catch e
+#         println("Saving data in mode $mode failed. Showing error.")
+#         show(e)
+#         continue
+#     end
+# end
 
 # save misc values
 header = [:dual_gaps, :LMO_calls, :grad_calls, :obj_calls, :memory, :times]

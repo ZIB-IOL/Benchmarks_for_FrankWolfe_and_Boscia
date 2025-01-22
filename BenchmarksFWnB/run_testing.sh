@@ -1,12 +1,12 @@
 #!/usr/bin/bash
 
 # Give your job a name, so you can recognize it in the queue overview
-#SBATCH --job-name=FrankWolfeBench
+#SBATCH --job-name=FW_DICG_A-Opt
 
 # Define, how many nodes you need. Here, we ask for 1 node.
 # Each node has 16 or 20 CPU cores.
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=256G
 # You can further define the number of tasks with --ntasks-per-*
 # See "man sbatch" for details. e.g. --ntasks=4 will ask for 4 cpus.
@@ -16,13 +16,13 @@
 # force-stopped by the server. If you make the expected time too long, it will
 # take longer for the job to start. Here, we say the job will take 5 minutes.
 #              d-hh:mm:ss
-#SBATCH --time=1-00:00:00
+#SBATCH --time=0-01:00:00
 
 # Define the partition on which the job shall run. May be omitted.
 # How much memory you need.
 #SBATCH --partition=big  # Specify the desired partition, e.g. gpu, cpu or big (GPU is reserved for ML stuff)
 ## We want to run on htc-cmp[101-148], exlude all others
-#SBATCH --exclude=htc-cmp[001-008,011-013,014-022,023,024-025,501-532]
+#SBATCH --exclude=htc-cmp[001-008,024-025,501-532]
 
 # ATTENTION! CHANGE THIS LINE TO YOUR OWN USERNAME AND FOLDER
 #SBATCH --output=/home/htc/dkuzinow/SCRATCH/FrankWolfe_Bench/%j.log
@@ -33,7 +33,7 @@
 #SBATCH --mail-type=FAIL
 
 # You may not place any commands before the last SBATCH directive
-julia --project run_active_set_quadratic.jl $1 $2 $3 $4 $5 &> benchmark_output/frank_wolfe_benchmark_ActiveSetQuadratic_$1_$2_$3_$4_$SLURM_JOB_ID.txt
+srun julia --project dual_gap_jump.jl &> FW_dual_gap_jump_$SLURM_JOB_ID.txt
 
 # Finish the script
 exit 0

@@ -53,7 +53,7 @@ function build_nuclear(; n=50, k=10, rhs=275_000, active=false, seed=1234)
             end
             present_b[i, j] = -Xreal[i, j]
         end
-        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], present_mat, present_b)
+        active_set = FrankWolfe.ActiveSetQuadraticProductCaching([(1.0, x0)], present_mat, present_b)
         return f, grad!, lmo, active_set
     end
 

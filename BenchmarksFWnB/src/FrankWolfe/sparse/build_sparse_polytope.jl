@@ -31,7 +31,7 @@ function build_sparse(; n=100, K=40, rhs=1.0, active=false, seed=1234)
     x0 = compute_extreme_point(lmo, zeros(n))
 
     if convert(Bool, active) == true
-        active_set = FrankWolfe.ActiveSetQuadratic([(1.0, x0)], LinearAlgebra.I, -2*xp)
+        active_set = FrankWolfe.ActiveSetQuadraticProductCaching([(1.0, x0)], LinearAlgebra.I, -2*xp)
         return f, grad!, lmo, active_set
     end
 

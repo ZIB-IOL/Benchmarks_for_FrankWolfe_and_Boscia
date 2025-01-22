@@ -7,11 +7,12 @@ function run_active_set_quadratic(; branch="new")
                     "BPCG",
                   ]
 
-    problems    = [ "Simplex",
-                    "Birkhoff",
-                    "Sparse",
-                    "Nuclear",
-                    "Spectrahedron"
+    problems    = [ 
+                    "Simplex",  
+                    "Birkhoff", 
+                    "Sparse", 
+                    "Nuclear", 
+                    "Spectrahedron" 
                   ] 
 
     seeds       = [ 6237259982982784263,
@@ -49,5 +50,4 @@ function run_active_set_quadratic(; branch="new")
             end
         end
     end
-    
 end;

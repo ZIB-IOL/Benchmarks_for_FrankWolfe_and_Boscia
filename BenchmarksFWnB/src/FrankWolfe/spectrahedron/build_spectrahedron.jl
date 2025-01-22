@@ -53,7 +53,7 @@ function build_spectrahedron(; entries=1000, range=1500, radius=1.0, active=fals
             present_b[i, j] = -entry_values[idx]
             present_b[j, i] = -entry_values[idx]
         end
-        return f, grad!, lmo, FrankWolfe.ActiveSetQuadratic([(1.0, x0)], present_mat, present_b)
+        return f, grad!, lmo, FrankWolfe.ActiveSetQuadraticProductCaching([(1.0, x0)], present_mat, present_b)
     end
 
     return f, grad!, lmo, x0
