@@ -329,7 +329,7 @@
 #   end
 #   close(f)
 # end
-read_folder = "/home/htc/dkuzinow/research_projects/Benchmarks_for_FrankWolfe_and_Boscia/results/FrankWolfe/master/"
+read_folder = joinpath(@__DIR__, "Benchmarks_for_FrankWolfe_and_Boscia/results/FrankWolfe/master/")
 
 for file in readdir(read_folder)
     if endswith(file, ".csv")
