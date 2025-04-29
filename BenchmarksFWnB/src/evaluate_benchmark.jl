@@ -40,6 +40,8 @@ function benchmark_FW(  ;
                         fw_kwargs=[],
                         time_tolerance=0.05,
                         memory_tolerance=0.01,
+                        num_runs=3,
+                        time_per_run=60,
                      )
     fw = @match fw begin
         "Vanilla"       => frank_wolfe
@@ -71,6 +73,8 @@ function benchmark_FW(  ;
                         kwargs=fw_kwargs, 
                         time_tolerance=time_tolerance,
                         memory_tolerance=memory_tolerance,
+                        num_runs=num_runs,
+                        time_per_run=time_per_run,
                         )
     return bm
 end;
@@ -110,6 +114,8 @@ function benchmark_Boscia(  ;
                             boscia_kwargs=[],
                             time_tolerance=0.05,
                             memory_tolerance=0.01,
+                            num_runs=3,
+                            time_per_run=60,
                             )
     # FW variant to use
     fw_algo = @match fw begin
@@ -142,6 +148,8 @@ function benchmark_Boscia(  ;
                         kwargs=boscia_kwargs,
                         time_tolerance=time_tolerance,
                         memory_tolerance=memory_tolerance,
+                        num_runs=num_runs,
+                        time_per_run=time_per_run,
                         )
     return bm
 end;
@@ -171,6 +179,8 @@ function run_benchmark( func,
                         kwargs=[], 
                         time_tolerance=0.05, 
                         memory_tolerance=0.01,
+                        num_runs=3,
+                        time_per_run=60,
                         )
 
     f, grad!, lmo, x0 = args
@@ -190,13 +200,21 @@ function run_benchmark( func,
     gctimes         = Vector{Float64}([])
     allocs          = Vector{Int64}([])
 
-    for _ in 1:10
+    if num_runs === nothing
+        num_runs = 10
+    end
+
+    if time_per_run === nothing
+        time_per_run = 3600
+    end
+
+    for _ in 1:num_runs
         track_lmo.counter = 0
         track_grad!.counter = 0
         track_f.counter = 0
         global evaluated = @benchmark begin 
-            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, copy($x0); max_iteration=Inf, timeout=3600, epsilon=1e-7, verbose=true, $kwargs...) 
-        end samples=1 evals=1 seconds=4000 time_tolerance=time_tolerance memory_tolerance=memory_tolerance
+            global _, _, _, dual_gap, _ = $func($track_f, $track_grad!, $track_lmo, copy($x0); max_iteration=Inf, timeout=$time_per_run, epsilon=1e-7, verbose=true, $kwargs...) 
+        end samples=1 evals=1 seconds=(time_per_run * 1.1) time_tolerance=time_tolerance memory_tolerance=memory_tolerance
 
         # Tracking is done once each for eval run and taken sample, so need to half. Rounding for runs that timeout, since they may slightly differ in LMO calls
         push!(obj_counts, Int(round(track_f.counter / 2)))
@@ -212,9 +230,9 @@ function run_benchmark( func,
     end
 
     params = evaluated.params
-    params.samples = 10
+    params.samples = num_runs
     params.evals=1
-    params.seconds=3600
+    params.seconds=time_per_run
 
     bm = BenchmarkTools.Trial(params, times, gctimes, maximum(memory), maximum(allocs))
 
