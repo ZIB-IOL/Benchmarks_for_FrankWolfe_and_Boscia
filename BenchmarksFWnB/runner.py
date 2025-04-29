@@ -36,12 +36,14 @@ class Runner:
 
         # Translate python dict to julia dict with symbol keys
         build_args_dict = self.jl.Dict()
-        for key, value in self.config.build_args.items():
+        for key, value in self.config["build_args"].items() :
             build_args_dict[self.jl.Symbol(key)] = self.jl.seval(str(value))
 
         fw_kwargs_dict = self.jl.Dict()
-        for key, value in self.config.fw_kwargs.items():
+        for key, value in self.config["fw_kwargs"].items():
             fw_kwargs_dict[self.jl.Symbol(key)] = self.jl.seval(str(value))
+
+        print("Successfully translated python dicts to julia dicts")
 
         self.build_args = build_args_dict
         self.fw_kwargs = fw_kwargs_dict

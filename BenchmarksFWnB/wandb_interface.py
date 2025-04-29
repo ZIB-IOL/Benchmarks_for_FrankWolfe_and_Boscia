@@ -19,9 +19,9 @@ defaults = dict(
     package="FrankWolfe",                                       # FrankWolfe or Boscia
     fw_variant="BPCG",                                          # Variant to use, e.g. Vanilla, BPCG, DICG, Away  
     problem="Simplex",                                          # Problem to benchmark, e.g. Spectrahedron, Birkhoff, D-Optimal, SparseReg                          
-    build_args=dict(n=100, m=100, radius=1.0),                  # Arguments to build the problem, e.g. dict(n=100), dict(n=100, rhs=100_000)
+    build_args=dict(),                  # Arguments to build the problem, e.g. dict(n=100), dict(n=100, rhs=100_000)
     seed=1234,                                                  # Seed for the random number generator
-    fw_kwargs=dict(max_iteration=1000, line_search="LineSearchMethod=FrankWolfe.Adaptive()"),                                               # Keyword arguments to pass to the FrankWolfe variant
+    fw_kwargs=dict(),                                           # Keyword arguments to pass to the FrankWolfe variant
     time_per_run=20,                                            # Time per run in seconds
     num_runs=1,                                                 # Number of runs to perform
 ) 
@@ -40,6 +40,7 @@ wandb.init(
     entity=None,  # automatically changed in sweep
 )
 config = wandb.config
+print(defaults)
 config = Utils.update_config_with_default(config, defaults)
 
 @contextmanager
