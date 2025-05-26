@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### EXPERIMENT configurations
-sweep_ids=('wandb agent dkuzinow/bm-fw-b-000/jsxk3ep8') # Sweep IDs
+sweep_ids=('wandb agent dkuzinow/bm-fw-b-000/0dge3868') # Sweep IDs
 job_name="BenchmarksFWnB-Test" # Job name for tracking
 git_repo_name="Benchmarks_for_FrankWolfe_and_Boscia/BenchmarksFWnB"
 branch="wandb"

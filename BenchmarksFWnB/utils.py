@@ -15,7 +15,7 @@ class Utils:
         for key, default_value in defaultDict.items():
             if key not in configDict:
                 try:
-                    configDict[key] = eval(str(default_value))
+                    configDict[key] = eval(default_value)
                 except:
                     configDict[key] = default_value
             elif isinstance(default_value, dict):

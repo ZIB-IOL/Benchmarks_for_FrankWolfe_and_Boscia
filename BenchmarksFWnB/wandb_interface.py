@@ -40,7 +40,6 @@ wandb.init(
     entity=None,  # automatically changed in sweep
 )
 config = wandb.config
-print(defaults)
 config = Utils.update_config_with_default(config, defaults)
 
 @contextmanager
