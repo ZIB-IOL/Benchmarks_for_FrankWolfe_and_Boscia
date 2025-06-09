@@ -1,16 +1,16 @@
 #!/bin/bash
 
 ### EXPERIMENT configurations
-sweep_ids=('wandb agent dkuzinow/bm-fw-b-000/0dge3868') # Sweep IDs
+sweep_ids=('wandb agent dkuzinow/bm-fw-b-000/taeccerg') # Sweep IDs
 job_name="BenchmarksFWnB-Test" # Job name for tracking
 git_repo_name="Benchmarks_for_FrankWolfe_and_Boscia/BenchmarksFWnB"
 branch="wandb"
 
 ### SLURM configurations
-max_time="0-12" # Maximum time in days-hours format
+max_time="0-10" # Maximum time in days-hours format
 partitions=("small")
 submit_all_at_once=true # Submit all jobs at once
-num_experiments=2 # Number of experiments per sweep, adjust as needed
+num_experiments=36 # Number of experiments per sweep, adjust as needed
 max_concurrent_runs=1380 # Maximum number of concurrent running jobs
 mem="64G"
 constraint="Gold6338"  # Constrains to htc-cmp[101-148]

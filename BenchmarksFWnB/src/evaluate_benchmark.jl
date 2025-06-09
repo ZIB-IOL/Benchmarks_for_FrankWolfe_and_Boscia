@@ -179,8 +179,8 @@ function run_benchmark( func,
                         kwargs=[], 
                         time_tolerance=0.05, 
                         memory_tolerance=0.01,
-                        num_runs=3,
-                        time_per_run=60,
+                        num_runs=10,
+                        time_per_run=3600,
                         )
 
     f, grad!, lmo, x0 = args
