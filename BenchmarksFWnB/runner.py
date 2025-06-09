@@ -84,8 +84,9 @@ class Runner:
 
     def run(self):
         if self.package == "FrankWolfe":
-            # log_name = str(self.package) + "_" + str(self.fw_variant) + "_" + str(self.problem) + "_"
-            self.jl.seval(f"f = open(\"{self.config.log_name}\", \"w\")")
+            self.jl.seval(f"n = {self.build_args}[:n]")
+            self.jl.seval(f"log_name = \"{self.package}_{self.fw_variant}_{self.problem}_n$n_{self.seed}.txt\"")
+            self.jl.seval(f"f = open(log_name, \"w\")")
             bm, obj_counts, grad_counts, lmo_counts, dual_gaps, memory, times = self.jl.seval(f"""redirect_stdout(f) do 
                 return benchmark_FW(
                         fw=\"BPCG\",

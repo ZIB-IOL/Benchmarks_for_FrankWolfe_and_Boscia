@@ -38,7 +38,7 @@ Across all problems, the separate `seed` parameter of the sweep controls the ran
 | `Poisson`| `n`| `Dimension of data`|
 | `Simplex`| `m`, `n`, `radius` | `Number of rows in matrix`, `Number of cols in matrix`, `Radius of LMO`|
 | `Sparse`| `n`, `K`, `rhs`| `Dimension of problem`, `Number of values in LMO`, `Radius of LMO`|
-| `Spectrahedron`| `entries`, `range`, `radius`|`Number of known entries`, `Range of entry values and LMO dimension`, `Radius of LMO`|
+| `Spectrahedron`| `entries`, `n`, `radius`|`Number of known entries`, `Range of entry values and LMO dimension`, `Radius of LMO`|
 
 All parameters have predefined default values, so it is not necessary to define all of them. It is however recommended to avoid unintended behaviour. Valid build dictionaries could look as follows:
 ```
@@ -62,7 +62,7 @@ Dict(:M => 5000, :n => 2500) # radius defaults to 1.0
 Dict(:n => 10000, :K => 4000, :rhs => 1.0)
 
 # Spectrahedron
-Dict(:entries => 1000, :range => 500, :radius => 3.0)
+Dict(:entries => 1000, :n => 500, :radius => 3.0)
 ```
 
 ### Boscia build args

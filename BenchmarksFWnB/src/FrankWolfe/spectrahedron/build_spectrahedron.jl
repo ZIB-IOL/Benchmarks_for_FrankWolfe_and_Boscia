@@ -3,23 +3,21 @@
 Builds spectrahedron objective and LMO
 
 # Arguments
-- 'range': range of entry values. Also functions as LMO dim
+- 'n': range of entry values. Also functions as LMO dim
 - 'entries': number of known entries
 
 # Return 
 - 'f': objective function
 - 'grad!': gradient of f
-- 'lmo': FrankWolfe.SpectraplexLMO of dimension 'range'
+- 'lmo': FrankWolfe.SpectraplexLMO of dimension n
 - 'x0': starting vertex
 
 Reference: https://github.com/ZIB-IOL/FrankWolfe.jl/blob/35033927971290f42dbb0ea1f924d4c1f74f1524/examples/docs_6_spectrahedron.jl#L2 
 """
-function build_spectrahedron(; entries=1000, range=1500, radius=1.0, active=false, seed=1234)
+function build_spectrahedron(; entries=1000, n=1500, radius=1.0, active=false, seed=1234)
     rng = StableRNG(seed)
-    
-    n = range
 
-    entry_indices = unique!([minmax(rand(rng, 1:range, 2)...) for _ in 1:entries])
+    entry_indices = unique!([minmax(rand(rng, 1:n, 2)...) for _ in 1:entries])
     entry_values = randn(rng, length(entry_indices))
 
     function f(X)
