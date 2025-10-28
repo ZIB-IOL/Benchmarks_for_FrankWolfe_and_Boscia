@@ -2,7 +2,7 @@
 [Benchmarks_for_FrankWolfe_and_Boscia](https://github.com/ZIB-IOL/Benchmarks_for_FrankWolfe_and_Boscia) is a repository used to benchmark the [FrankWolfe.jl](https://github.com/ZIB-IOL/FrankWolfe.jl) and [Boscia.jl](https://github.com/ZIB-IOL/Boscia.jl) packages on select instances.
 
 ## Overview
-The main way to benchmark either package is via [Weights & Biases (wandb)](https://wandb.ai/site/). To do this, a sweep needs to be configured and the necessary parameters need to be specified. The list of parameters is the same for both packages, but valid input may differ, e.g. problems which to benchmark. The table below gives an overview of which parameter inputs are allowed for the respective packages. An explanation for the `build_args` and `kwargs` paramters can be found under [Build and Keyword arguments](#build-arguments)
+The main way to benchmark either package is via [Weights & Biases (wandb)](https://wandb.ai/site/). To do this, a sweep needs to be configured and the necessary parameters need to be specified. The list of parameters is the same for both packages, but valid input may differ, e.g. problems which to benchmark. The table below gives an overview of which parameter inputs are allowed for the respective packages. An explanation for the `build_args` and `kwargs` paramters can be found under [Build and Keyword arguments](#build-arguments).
 | Parameter | FrankWolfe | Boscia | 
 | --------- | ---------- | ------ |
 | package   | `FrankWolfe` | `Boscia` |
@@ -10,8 +10,21 @@ The main way to benchmark either package is via [Weights & Biases (wandb)](https
 | build_args | `Dict(input)` | `Dict(input)` |
 | seed | random seed: `Int` | random seed: `Int` |
 | kwargs | `Dict(input)` | `Dict(input)`|
-| time_per_run | time in secs: `Int` | time in secs: `Int` |
+| time_per_run | time in seconds: `Int` | time in seconds: `Int` |
 | num_runs | # of runs: `Int` | # of runs: `Int` | 
+
+For the `Boscia` package there are additional `settings` parameters that control parts of the solving process. They are listed in the table below. For specifics on customization of these see their [definitions](https://github.com/ZIB-IOL/Boscia.jl/blob/main/src/settings.jl).
+
+| Parameter | Boscia |
+| --------- | ------ |
+| `settings_bnb` | Controls `branch and bound` parameters |
+| `settings_fw`  | Controls `Frank-Wolfe` parameters |
+| `settings_tol` | Controls `tolerance` parameters |
+| `settings_pp` | Controls `postprocessing` parameters |
+| `settings_heur` | Controls `heurisic` parameters |
+| `settings_tight` | Controls `tightening` parameters |
+| `settings_domain` | Controls `domain` parameters |
+| `settings_mode` | Controls `mode` parameters |
 
 ## Build and Keyword arguments
 The easiest way to define the `build_args` and `kwargs` dictionary for benchmarking is to use [Julia](https://julialang.org) syntax. As an example, the `Birkhoff` problem for the `FrankWolfe` package takes the build parameters `n`, `active` and `seed`. A valid `build_args` dictionary could look as follows:
@@ -94,7 +107,24 @@ When creating a sweep wandb asks for a configuration of the sweep. It is advised
 
 In general, a sweep will take a couple of generic inputs, such as `program` or `method`. These should mostly be the same across all sweeps. `program` always refers to the file being run, here it is `wandb_interface.py`, and `method` controls how wandb combines the parameters. Usually, `grid` is advised as this method runs all combinations of parameters.
 
-An example of a sweep configuration for `FrankWole` could look as follows:
+There are multiple ways of defining different values for the sweep. Combining these in a single sweep is possible, but it is recommended to stick to a single way.
+
+```
+# Both of these define the same parameters in wandb
+parameters:
+    fw_variant:
+        values:
+            - Vanilla
+            - BCG
+            - BPCG
+
+parameters:
+    fw_variant:
+        values: [Vanilla, BCG, BPCG]
+```
+Please note that, in order to avoid unintended behaviour, it is *strongly* recommended to assign each parameter a value.
+
+An example of a sweep configuration for `FrankWolfe` could look as follows:
 ```
 program: wandb_interface.py
 
@@ -112,8 +142,7 @@ parameters:
         distribution: categorical
     
     problem:
-        values:
-            - Simplex
+        value: Simplex
     
     build_args:
         values:
@@ -129,7 +158,10 @@ parameters:
         distribution: categorical
     
     kwargs: 
-        values: [Dict(:line_search => FrankWolfe.Secant()), Dict(:line_search => FrankWolfe.Adaptive())]
+        values: 
+            - Dict(:line_search => FrankWolfe.Secant()) 
+            - Dict(:line_search => FrankWolfe.Adaptive())
+        distribution: categorical
     
     time_per_run:
         value: 3600
@@ -138,4 +170,5 @@ parameters:
         value: 10
 ```
 
-
+## Running a sweep
+After configuring a sweep, on the overview page for the sweep there is a `launch agent` which holds the instruction for the wandb agent to run the sweep. It looks of the form `wandb agent user/project/sweep_id`. This has to be put into the variable `sweep_ids` for the script to execute the agents accordingly. It should look like `sweep_ids=('wandb agent user/project/sweep_id')`. After specifying the remaining variables, e.g. `num_experiments` for the number of combinations (jobs) or `max_time` for the `SLURM` time limit, the sweep can be executed by running `bash cpu_controller.sh` from the terminal.

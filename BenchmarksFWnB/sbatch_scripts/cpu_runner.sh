@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --output=/home/htc/dkuzinow/SCRATCH/FW-Boscia-showcase/FW-Boscia-showcase_%j.txt
+#SBATCH --output=/home/htc/USER/SCRATCH/run_%j.txt
 #SBATCH --cpus-per-task=16   # Specify total number of CPUs for the job
 # Usage: cpu_runner.sh <git_repo_path> <branch> <sweep_id>
 # NOTE: Adjust username in the SBATCH command above, this cannot be dynamically inferred from $USER
