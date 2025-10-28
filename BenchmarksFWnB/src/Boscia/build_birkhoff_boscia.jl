@@ -69,12 +69,12 @@ function build_birkhoff_boscia(; n=10, k=5, seed=1234)
             # doubly stochastic constraints
             MOI.add_constraint.(
                 o,
-                vec(sum(X[i], dims=1, init=MOI.ScalarAffineFunction{Float64}([], 0.0))),
+                vec(sum(1.0 * X[i], dims=1, init=MOI.ScalarAffineFunction{Float64}([], 0.0))),
                 MOI.EqualTo(1.0),
             )
             MOI.add_constraint.(
                 o,
-                vec(sum(X[i], dims=2, init=MOI.ScalarAffineFunction{Float64}([], 0.0))),
+                vec(1.0 * sum(1.0 * X[i], dims=2, init=MOI.ScalarAffineFunction{Float64}([], 0.0))),
                 MOI.EqualTo(1.0),
             )
             # 0 ≤ Y_i ≤ X_i
@@ -84,7 +84,7 @@ function build_birkhoff_boscia(; n=10, k=5, seed=1234)
         end
 
         # theta in simplex -> sums to 1
-        MOI.add_constraint(o, sum(theta, init=0.0), MOI.EqualTo(1.0))
+        MOI.add_constraint(o, 1.0 * sum(1.0 * theta, init=0.0), MOI.EqualTo(1.0))
         return FrankWolfe.MathOptLMO(o)
     end
 

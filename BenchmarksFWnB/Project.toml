@@ -1,7 +1,7 @@
 name = "BenchmarksFWnB"
 uuid = "5cc87212-ddca-4fbf-ac90-b2b5fb5359f7"
-authors = ["dhendryc"]
 version = "0.1.0"
+authors = ["dhendryc"]
 
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
@@ -16,6 +16,7 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Match = "7eb4fadd-790c-5f42-8a69-bfa0b872bfbf"
 MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SCIP = "82193955-e24f-5292-bf16-6f2c5261a85f"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
@@ -25,12 +26,13 @@ Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
 
 [compat]
+Boscia = "0.2.1"
 Distributions = "0.25"
 HiGHS = "1"
 LinearAlgebra = "1.6"
 MathOptInterface = "1"
+Plots = "1.40.7"
 Random = "1.6"
-SCIP = "0.11"
 Statistics = "1.6"
 julia = "1.6"
 

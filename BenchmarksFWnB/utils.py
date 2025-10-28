@@ -1,3 +1,6 @@
+# import matplotlib.pyplot as plt
+
+
 class Utils:
     """Utility functions."""
     @staticmethod
@@ -21,3 +24,8 @@ class Utils:
             elif isinstance(default_value, dict):
                 configDict[key] = Utils.update_config_with_default(configDict.get(key, {}), default_value)
         return configDict
+    
+    @staticmethod
+    def plot_trajectory(jl, trajectory):
+        """Plot the trajectory of the benchmark."""
+        pass
